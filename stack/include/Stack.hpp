@@ -1,15 +1,17 @@
 #ifndef STACK_HPP
 #define STACK_HPP
 
+#include <utility>
+
 constexpr int DEFAULT_SIZE{1};  // Default size of the stack.
 constexpr int RESIZE_FACTOR{2}; // Resize factor of the stack.
 
 template <typename T>
 class Stack
 {
-    int  m_size{DEFAULT_SIZE};       // Size of the stack.
-    T*   m_storage{new T[m_size]};   // Pointer to the stack.
-    int  m_top{};                    // Index of the top of the stack.
+    int m_size{DEFAULT_SIZE};     // Size of the stack.
+    T*  m_storage{new T[m_size]}; // Pointer to the stack.
+    int m_top{};                  // Index of the top of the stack.
 
     void resize()
     {
@@ -66,7 +68,7 @@ public:
         {
             delete[] m_storage; // Delete the old stack.
 
-            m_size = other.m_size;        // Copy the size.
+            m_size    = other.m_size;  // Copy the size.
             m_storage = new T[m_size]; // Create a new stack with the given size.
 
             // Copy the items from the other stack to this stack.
@@ -74,6 +76,26 @@ public:
             {
                 m_storage[i] = other.m_storage[i];
             }
+        }
+        return *this; // Return this stack.
+    }
+
+    // Move constructor.
+    Stack(Stack<T>&& other) noexcept
+        : m_size{std::exchange(other.m_size, 0)}, m_storage{std::exchange(other.m_storage, nullptr)}
+    {
+    }
+
+    // Move assignment operator.
+    Stack& operator=(Stack<T>&& other) noexcept
+    {
+        if (this != &other) // Check for self-assignment.
+        {
+            delete[] m_storage; // Delete the old stack.
+
+            // Member-wise move.
+            m_size    = std::exchange(other.m_size, 0);
+            m_storage = std::exchange(other.m_storage, {});
         }
         return *this; // Return this stack.
     }
@@ -92,7 +114,7 @@ public:
     // Remove item from the top of the stack.
     T pop()
     {
-        T item = m_storage[--m_top]; // Remove item from the top of the stack.
+        T item = m_storage[--m_top]; // Move down the index and get the item.
 
         return item; // Return the item.
     }
@@ -109,10 +131,10 @@ public:
         return m_size;
     }
 
+    // Return the item at the top of the stack.
     T& top() const
     {
         return m_storage[m_top - 1];
     }
 };
-
 #endif // STACK_HPP

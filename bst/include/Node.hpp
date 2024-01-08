@@ -4,7 +4,7 @@
 template <typename T>
 struct Node
 {
-    T data{};
+    T     data{};
     Node* leftchild{nullptr};
     Node* rightchild{nullptr};
 

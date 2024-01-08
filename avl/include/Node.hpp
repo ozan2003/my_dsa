@@ -9,7 +9,7 @@ struct Node
     Node* rightchild{nullptr};
     /*
      *  Height of the node is the longest path down to a leaf.
-     *  Height = max(height(leftchild), height(rightchild)) + 1
+     *  Height = max(height(rightchild), height(leftchild)) + 1
      */
     int height{};
 
