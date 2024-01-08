@@ -66,11 +66,13 @@ public:
                 remove_back();
             }
 
-            auto other_head = other.m_head;
+            auto other_head = other.m_head; // Start from the beginning.
+
+            // Copy the other list.
             while (other_head != nullptr)
             {
-                append(other_head->data);
-                other_head = other_head->next;
+                append(other_head->data); // Append other's data to out list.
+                other_head = other_head->next; // Move forward.
             }
         }
 
