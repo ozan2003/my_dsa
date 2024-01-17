@@ -1,6 +1,12 @@
 #ifndef AVLTREE_HPP
 #define AVLTREE_HPP
 
+#include "Node.hpp"
+
+#include <algorithm> // std::max
+#include <iostream>  // std::cout, std::ostream
+#include <utility>   // std::exchange
+
 /*
  *  AVL Trees are a specialized for of Binary Search Trees.
  *
@@ -14,17 +20,11 @@
  *
  */
 
-#include "Node.hpp"
-
-#include <algorithm> // std::max
-#include <iostream>
-#include <utility>
-
 template <typename T>
 class AVLTree
 {
 private:
-    Node<T>* m_root{nullptr}; // The root node of the AVL tree.
+    Node<T>* m_root{nullptr}; // The node node of the AVL tree.
     int      m_count{};       // The number of elements in the AVL tree.
 
     // Helper functions.
@@ -33,16 +33,18 @@ private:
     auto balance_factor(Node<T>* node) -> int;
     auto rotate_right(Node<T>* y) -> Node<T>*;
     auto rotate_left(Node<T>* x) -> Node<T>*;
-    auto balance(Node<T>* root) -> Node<T>*;
+    auto balance(Node<T>* node) -> Node<T>*;
 
-    auto insert_helper(Node<T>* root, const T& item) -> Node<T>*;
-    auto remove_helper(Node<T>* root, const T& item) -> Node<T>*;
-    auto print_helper(Node<T>* root, std::ostream& os) const -> void;
-    auto clear_helper(Node<T>* root) -> void;
-    auto find_helper(Node<T>* root, const T& item) const -> T*;
-    auto sum_helper(Node<T>* root, int& accumulator) const -> void;
+    auto insert_helper(Node<T>* node, const T& item) -> Node<T>*;
+    auto remove_helper(Node<T>* node, const T& item) -> Node<T>*;
+    auto print_helper(Node<T>* node, std::ostream& out) const -> void;
+    auto clear_helper(Node<T>* node) -> void;
+    auto find_helper(Node<T>* node, const T& item) const -> T*;
+    auto sum_helper(Node<T>* node, int& accumulator) const -> void;
 
-    auto min(Node<T>* root) -> Node<T>*;
+    auto min(Node<T>* node) -> Node<T>*;
+
+    auto deep_copy(Node<T>* node) -> Node<T>*;
 
 public:
     // Constructors.
@@ -56,10 +58,8 @@ public:
 
     // Copy constructor.
     AVLTree(const AVLTree& other)
+        : m_root{deep_copy(other.m_root)}, m_count{other.m_count}
     {
-        // Member-wise copy.
-        m_root  = other.m_root;
-        m_count = other.m_count;
     }
 
     // Copy assignment operator.
@@ -70,7 +70,7 @@ public:
             clear_helper(m_root); // Clear the current tree.
 
             // Member-wise copy.
-            m_root  = other.m_root;
+            m_root  = deep_copy(other.m_root); // Copy the node nodes.
             m_count = other.m_count;
         }
 
@@ -91,7 +91,7 @@ public:
             clear_helper(m_root); // Clear the current tree.
 
             // Member-wise move.
-            m_root  = std::exchange(other.m_root, nullptr); // Exchange the root nodes.
+            m_root  = std::exchange(other.m_root, nullptr); // Exchange the node nodes.
             m_count = std::exchange(other.m_count, 0);      // Exchange the number of elements.
         }
 
@@ -183,9 +183,9 @@ public:
     }
 
     /**
-     * Calculates the sum of all elements in the AVL tree.
+     * Calculates the sum of all elements in the tree.
      *
-     * @return The sum of all elements in the AVL tree.
+     * @return The sum of all elements in the tree.
      */
     T sum() const
     {
@@ -199,22 +199,22 @@ public:
 /**
  * Calculates the sum of all elements in the AVL tree.
  *
- * @param root The root node of the AVL tree.
+ * @param node The node node of the AVL tree.
  * @param accumulator The variable to store the sum of elements.
  */
 template <typename T>
-void AVLTree<T>::sum_helper(Node<T>* root, int& accumulator) const
+void AVLTree<T>::sum_helper(Node<T>* node, int& accumulator) const
 {
     // Base case.
-    if (root == nullptr)
+    if (node == nullptr)
     {
         return;
     }
 
-    accumulator += root->data; // Add the current node's data to the accumulator.
+    accumulator += node->data; // Add the current node's data to the accumulator.
 
-    sum_helper(root->leftchild, accumulator);  // Call left sub-tree.
-    sum_helper(root->rightchild, accumulator); // Call right sub-tree.
+    sum_helper(node->leftchild, accumulator);  // Call left sub-tree.
+    sum_helper(node->rightchild, accumulator); // Call right sub-tree.
 }
 
 /**
@@ -266,12 +266,12 @@ int AVLTree<T>::balance_factor(Node<T>* node)
  * Rotates the given node to the right in the tree.
  *
  * @param y The node to be rotated.
- * @return The new root of the subtree after rotation.
+ * @return The new node of the subtree after rotation.
  */
 template <typename T>
 Node<T>* AVLTree<T>::rotate_right(Node<T>* y)
 {
-    Node<T>* new_root = y->leftchild;         // y's left child will be the new root.
+    Node<T>* new_root = y->leftchild;         // y's left child will be the new node.
     Node<T>* T2       = new_root->rightchild; // T2 is the right subtree of new_root.
 
     new_root->rightchild = y;  // Make y the right child of new_root.
@@ -281,19 +281,19 @@ Node<T>* AVLTree<T>::rotate_right(Node<T>* y)
     y->height        = std::max(height(y->leftchild), height(y->rightchild)) + 1;
     new_root->height = std::max(height(new_root->leftchild), height(new_root->rightchild)) + 1;
 
-    return new_root; // Return the new root.
+    return new_root; // Return the new node.
 }
 
 /**
  * Rotates the given node to the left in the tree.
  *
  * @param x The node to be rotated.
- * @return The new root of the subtree after rotation.
+ * @return The new node of the subtree after rotation.
  */
 template <typename T>
 Node<T>* AVLTree<T>::rotate_left(Node<T>* x)
 {
-    Node<T>* new_root = x->rightchild;       // x's right child will be the new root.
+    Node<T>* new_root = x->rightchild;       // x's right child will be the new node.
     Node<T>* T2       = new_root->leftchild; // T2 is the left subtree of new_root.
 
     new_root->leftchild = x;  // Make x the left child of new_root.
@@ -303,89 +303,89 @@ Node<T>* AVLTree<T>::rotate_left(Node<T>* x)
     x->height        = std::max(height(x->leftchild), height(x->rightchild)) + 1;
     new_root->height = std::max(height(new_root->leftchild), height(new_root->rightchild)) + 1;
 
-    return new_root; // Return the new root.
+    return new_root; // Return the new node.
 }
 
 /**
- * Balances the AVL tree by performing necessary rotations on the given root node.
+ * Balances the AVL tree by performing necessary rotations on the given node node.
  *
- * @param root The root node of the AVL tree to be balanced.
- * @return The new root node after balancing.
+ * @param node The node node of the AVL tree to be balanced.
+ * @return The new node node after balancing.
  */
 template <typename T>
-Node<T>* AVLTree<T>::balance(Node<T>* root)
+Node<T>* AVLTree<T>::balance(Node<T>* node)
 {
     // Base case.
-    if (root == nullptr)
+    if (node == nullptr)
     {
-        return root;
+        return node;
     }
 
     // Apply the node height formula.
-    // Update the height of the root node.
-    root->height = std::max(height(root->leftchild), height(root->rightchild)) + 1;
+    // Update the height of the node node.
+    node->height = std::max(height(node->leftchild), height(node->rightchild)) + 1;
 
-    // int balance = balance_factor(root);
+    // int balance = balance_factor(node);
 
-    // Check for balance factor whether root is left or right-heavy.
-    // If the root is left-heavy.
-    if (int balance = balance_factor(root); balance > 1)
+    // Check for balance factor whether node is left or right-heavy.
+    // If the node is left-heavy.
+    if (int balance = balance_factor(node); balance > 1)
     {
-        // If the root's right child is right-heavy.
-        if (balance_factor(root->rightchild) < 0)
+        // If the node's right child is right-heavy.
+        if (balance_factor(node->rightchild) < 0)
         {
             // Double rotation (Right-left rotation).
-            root->rightchild = rotate_right(root->rightchild);
+            node->rightchild = rotate_right(node->rightchild);
         }
 
-        return rotate_left(root); // Single rotation.
+        return rotate_left(node); // Single rotation.
     }
-    // If the root is right-heavy.
+    // If the node is right-heavy.
     else if (balance < -1)
     {
-        // If the root's left child is left-heavy.
-        if (balance_factor(root->leftchild) > 0)
+        // If the node's left child is left-heavy.
+        if (balance_factor(node->leftchild) > 0)
         {
             // Double rotation (Left-right rotation).
-            root->leftchild = rotate_left(root->leftchild);
+            node->leftchild = rotate_left(node->leftchild);
         }
 
-        return rotate_right(root); // Single rotation.
+        return rotate_right(node); // Single rotation.
     }
 
-    return root;
+    return node;
 }
 
 /**
  * Inserts a new node with the given item into the AVL tree.
  * The node's height is updated within the balance function.
  *
- * @param root The root node of the AVL tree.
+ * @param node The node node of the AVL tree.
  * @param item The item to be inserted.
- * @return The root node of the updated AVL tree.
+ * @return The node node of the updated AVL tree.
  */
 template <typename T>
-Node<T>* AVLTree<T>::insert_helper(Node<T>* root, const T& item)
+Node<T>* AVLTree<T>::insert_helper(Node<T>* node, const T& item)
 {
     // First step is the basic BST insertion.
-    if (root == nullptr)
+    if (node == nullptr)
     {
         // Done.
         return new Node<T>{item};
     }
 
-    if (item < root->data) // Insert to the left if item is less than root.
+    if (item < node->data) // Insert to the left if item is less than node.
     {
-        root->leftchild = insert_helper(root->leftchild, item);
+        node->leftchild = insert_helper(node->leftchild, item);
     }
-    else // Insert to the right if item is less than root.
+    else // Insert to the right if item is less than node.
     {
-        root->rightchild = insert_helper(root->rightchild, item);
+        node->rightchild = insert_helper(node->rightchild, item);
     }
 
     // Second step is the fixing the AVL Tree's property from changed node.
     // Node's height is updated within balance.
-    return balance(root);
+    return balance(node);
 }
 
 /**
@@ -394,77 +394,77 @@ Node<T>* AVLTree<T>::insert_helper(Node<T>* root, const T& item)
  * 1. It removes the node using the binary search tree (BST) removal algorithm.
  * 2. It fixes the AVL tree's property from the changed node.
  *
- * @param root The root node of the AVL tree.
+ * @param node The node of the AVL tree.
  * @param item The item to be removed from the AVL tree.
- * @return The root node of the AVL tree after the removal.
+ * @return The node of the AVL tree after the removal.
  */
 template <typename T>
-Node<T>* AVLTree<T>::remove_helper(Node<T>* root, const T& item)
+Node<T>* AVLTree<T>::remove_helper(Node<T>* node, const T& item)
 {
     // First step is BST removal.
-    if (root == nullptr)
+    if (node == nullptr)
     {
-        return root;
+        return node;
     }
 
-    if (item < root->data)
+    if (item < node->data)
     {
-        root->leftchild = remove_helper(root->leftchild, item);
+        node->leftchild = remove_helper(node->leftchild, item);
     }
-    else if (item > root->data)
+    else if (item > node->data)
     {
-        root->rightchild = remove_helper(root->rightchild, item);
+        node->rightchild = remove_helper(node->rightchild, item);
     }
     else // Found, remove it.
     {
-        if (root->leftchild == nullptr) // If the node has one child.
+        if (node->leftchild == nullptr) // If the node has one child.
         {
-            Node<T>* temp = root->rightchild;
-            delete root; // Delete the node.
+            Node<T>* temp = node->rightchild;
+            delete node; // Delete the node.
             return temp;
         }
-        else if (root->rightchild == nullptr) // If the node has one child.
+        else if (node->rightchild == nullptr) // If the node has one child.
         {
-            Node<T>* temp = root->leftchild;
-            delete root; // Delete the node.
+            Node<T>* temp = node->leftchild;
+            delete node; // Delete the node.
             return temp;
         }
 
         // If the node has two children.
-        Node<T>* temp    = min(root->rightchild); // Find the inorder successor.
-        root->data       = temp->data;            // Copy the inorder successor's data to the node.
-        root->rightchild = remove_helper(root->rightchild, temp->data); // Delete the inorder successor.
+        Node<T>* temp    = min(node->rightchild); // Find the inorder successor.
+        node->data       = temp->data;            // Copy the inorder successor's data to the node.
+        node->rightchild = remove_helper(node->rightchild, temp->data); // Delete the inorder successor.
     }
 
     // Second step is the fixing the AVL Tree's property from changed node.
-    return balance(root);
+    return balance(node);
 }
 
 /**
  * Finds the minimum value node in the AVL tree.
  *
- * @param root The root node of the AVL tree.
+ * @param node The node node of the AVL tree.
  * @return The minimum value node in the AVL tree.
  */
 template <typename T>
-Node<T>* AVLTree<T>::min(Node<T>* root)
+Node<T>* AVLTree<T>::min(Node<T>* node)
 {
     // Find the leftmost node since this is based on BST.
-    while (root->leftchild != nullptr)
+    while (node->leftchild != nullptr)
     {
-        root = root->leftchild;
+        node = node->leftchild;
     }
-    return root;
+    return node;
 }
 
 /**
  * Recursively prints the elements of the AVL tree in post-order traversal.
  *
- * @param root The root node of the AVL tree.
+ * @param node The node node of the AVL tree.
  * @param os The output stream to print to.
  */
 template <typename T>
-void AVLTree<T>::print_helper(Node<T>* root, std::ostream& os) const
+void AVLTree<T>::print_helper(Node<T>* node, std::ostream& out) const
 {
     /*
      *  Pre-order :  <ROOT>  LEFT   RIGHT
@@ -472,66 +472,89 @@ void AVLTree<T>::print_helper(Node<T>* root, std::ostream& os) const
      *  Post-order:  LEFT    RIGHT <ROOT>
      */
 
-    if (root == nullptr)
+    if (node == nullptr)
     {
         return;
     }
 
-    print_helper(root->leftchild, os);  // Call left sub-tree.
-    print_helper(root->rightchild, os); // Call right sub-tree.
-    os << root->data << ' ';
+    print_helper(node->leftchild, out);  // Call left sub-tree.
+    print_helper(node->rightchild, out); // Call right sub-tree.
+    out << node->data << ' ';
 }
 
 /**
- * @brief Recursively clears the AVL tree starting from the given root node.
+ * @brief Recursively clears the AVL tree starting from the given node node.
  *
  * @tparam T The type of elements stored in the AVL tree.
- * @param root The root node of the AVL tree.
+ * @param node The node node of the AVL tree.
  */
 template <typename T>
-void AVLTree<T>::clear_helper(Node<T>* root)
+void AVLTree<T>::clear_helper(Node<T>* node)
 {
-    if (root == nullptr)
+    if (node == nullptr)
     {
         return;
     }
 
     // This uses post-order.
-    clear_helper(root->leftchild);
-    clear_helper(root->rightchild);
+    clear_helper(node->leftchild);
+    clear_helper(node->rightchild);
 
-    delete root; // Delete the node.
+    delete node; // Delete the node.
 }
 
 // Finding items are the same as in BST.
 /**
  * @brief Helper function to find an item in the AVL tree.
  *
- * This function recursively searches for the specified item in the AVL tree starting from the given root node.
+ * This function recursively searches for the specified item in the AVL tree starting from the given node node.
  *
- * @param root The root node of the AVL tree.
+ * @param node The node node of the AVL tree.
  * @param item The item to be found.
  * @return A reference to the found item if it exists, otherwise a reference to a default-constructed item.
  */
 template <typename T>
-T* AVLTree<T>::find_helper(Node<T>* root, const T& item) const
+T* AVLTree<T>::find_helper(Node<T>* node, const T& item) const
 {
-    while (root != nullptr)
+    while (node != nullptr)
     {
-        if (item < root->data)
+        if (item < node->data)
         {
-            root = root->leftchild;
+            node = node->leftchild;
         }
-        else if (item > root->data)
+        else if (item > node->data)
         {
-            root = root->rightchild;
+            node = node->rightchild;
         }
         else
         {
-            return root->data;
+            return node->data;
         }
     }
 
     return nullptr; // Not found.
 }
+
+/**
+ * @brief Deep copies the binary search tree starting from the given node.
+ *
+ * @param node The node node of the binary search tree.
+ * @return A pointer to the root node of the copied binary search tree.
+ */
+template <typename T>
+Node<T>* AVLTree<T>::deep_copy(Node<T>* node)
+{
+    if (node == nullptr)
+    {
+        return nullptr;
+    }
+
+    Node<T>* new_node = new Node<T>{node->data};
+
+    new_node->leftchild  = deep_copy(node->leftchild);
+    new_node->rightchild = deep_copy(node->rightchild);
+
+    return new_node;
+}
+
 #endif // AVLTREE_HPP

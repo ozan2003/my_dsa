@@ -6,21 +6,28 @@
 #include <iostream> // std::cout
 #include <utility>  // std::move
 
+/**
+ * Pre-order: ROOT, left, right
+ * In-order: left, ROOT, right
+ * Post-order: left, right, ROOT
+ */
+
 template <typename T>
 class BinSearchTree
 {
 private:
-    Node<T>* m_root{nullptr}; // The root of the BST.
+    Node<T>* m_root{nullptr}; // The node of the BST.
     int      m_count{};       // Number of the nodes in the BST.
 
     // Helper functions.
-    auto clear_helper(Node<T>*) -> void;
-    auto insert_helper(Node<T>*, const T&) -> Node<T>*;
-    auto find_helper(Node<T>*, const T&) const -> T*;
-    auto remove_helper(Node<T>*, const T&) -> Node<T>*;
-    auto print_helper(Node<T>*, std::ostream& os) const -> void;
-    auto remove_min(Node<T>*) -> Node<T>*;
-    auto min(Node<T>*) -> Node<T>*;
+    auto clear_helper(Node<T>* node) -> void;
+    auto insert_helper(Node<T>* node, const T& item) -> Node<T>*;
+    auto find_helper(Node<T>* node, const T& item) const -> T*;
+    auto remove_helper(Node<T>* node, const T& item) -> Node<T>*;
+    auto print_helper(Node<T>* node, std::ostream& os) const -> void;
+    auto remove_min(Node<T>* node) -> Node<T>*;
+    auto min(Node<T>* node) -> Node<T>*;
+    auto deep_copy(Node<T>* node) -> Node<T>*;
 
 public:
     // Default constructor.
@@ -34,19 +41,21 @@ public:
 
     // Copy constructor.
     BinSearchTree(const BinSearchTree& other)
+        : m_root{deep_copy(other.m_root)}, m_count{other.m_count}
     {
-        m_root  = other.m_root;
-        m_count = other.m_count;
     }
 
-    // Copy assignment operator.
+    // Copy assignment operator. This is a deep copy.
     BinSearchTree& operator=(const BinSearchTree& other)
     {
         // Check for self-assignment.
         if (this != &other)
         {
-            // Member-wise copy.
-            m_root  = other.m_root;
+            // Clear the current tree.
+            clear_helper(m_root);
+
+            // Deep copy the other tree.
+            m_root  = deep_copy(other.m_root);
             m_count = other.m_count;
         }
 
@@ -76,7 +85,7 @@ public:
     /**
      * @brief Clears the binary search tree.
      *
-     * Remove all nodes from the binary search tree and resets the root pointer and count of nodes.
+     * Remove all nodes from the binary search tree and resets the node pointer and count of nodes.
      */
     void clear()
     {
@@ -114,7 +123,7 @@ public:
             m_count--;
         }
 
-        return *temp;
+        return temp == nullptr ? T{} : *temp; // Return 0 if item was not found.
     }
 
     /**
@@ -163,98 +172,99 @@ public:
 /**
  * @brief Helper function to find an item in the binary search tree.
  *
- * @param root The root node of the binary search tree.
+ * @param node The node node of the binary search tree.
  * @param item The item to be found.
- * @return The found item if it exists in the tree, otherwise NULL.
+ * @return A pointer to the found item if it exists in the tree, otherwise nullptr.
  */
 template <typename T>
-T* BinSearchTree<T>::find_helper(Node<T>* root, const T& item) const
+T* BinSearchTree<T>::find_helper(Node<T>* node, const T& item) const
 {
-    while (root != nullptr)
+    while (node != nullptr)
     {
-        if (item < root->data) // Check left if item is smaller than root.
+        if (item < node->data) // Check left if item is smaller than node.
         {
-            root = root->leftchild;
+            node = node->leftchild;
         }
-        else if (item > root->data) // Check right if item is greater than root.
+        else if (item > node->data) // Check right if item is greater than node.
         {
-            root = root->rightchild;
+            node = node->rightchild;
         }
         else
         {
-            return &(root->data); // Found it.
+            return &(node->data); // Found it.
         }
     }
 
     return nullptr; // Empty tree or item not found.
 }
+
 /**
- * Inserts a new node with the given item into the binary search tree rooted at the specified root.
- * If the root is nullptr, a new node is created with the given item and returned as the new root.
- * If the item is less than the root's data, it is inserted to the left of the root.
- * If the item is greater than or equal to the root's data, it is inserted to the right of the root.
+ * Inserts a new node with the given item into the binary search tree rooted at the specified node.
+ * If the node is nullptr, a new node is created with the given item and returned as the new node.
+ * If the item is less than the node's data, it is inserted to the left of the node.
+ * If the item is greater than or equal to the node's data, it is inserted to the right of the node.
  *
- * @param root The root of the binary search tree.
+ * @param node The node of the binary search tree.
  * @param item The item to be inserted.
- * @return The root of the modified binary search tree.
+ * @return The node of the modified binary search tree.
  */
 template <typename T>
-Node<T>* BinSearchTree<T>::insert_helper(Node<T>* root, const T& item)
+Node<T>* BinSearchTree<T>::insert_helper(Node<T>* node, const T& item)
 {
-    if (root == nullptr) // Done.
+    if (node == nullptr) // Done.
     {
         return new Node<T>{item};
     }
 
-    if (item < root->data) // Insert to the right if item is less than root.
+    if (item < node->data) // Insert to the right if item is less than node.
     {
-        root->leftchild = insert_helper(root->leftchild, item);
+        node->leftchild = insert_helper(node->leftchild, item);
     }
-    else // Insert to the left if item is less than root.
+    else // Insert to the left if item is less than node.
     {
-        root->rightchild = insert_helper(root->rightchild, item);
+        node->rightchild = insert_helper(node->rightchild, item);
     }
 
-    return root;
+    return node;
 }
 
 /**
  * Removes the minimum value from the binary search tree rooted at the given node.
  *
- * @param root The root node of the binary search tree.
- * @return The updated root node after removing the minimum value.
+ * @param node The node node of the binary search tree.
+ * @return The updated node node after removing the minimum value.
  */
 template <typename T>
-Node<T>* BinSearchTree<T>::remove_min(Node<T>* root)
+Node<T>* BinSearchTree<T>::remove_min(Node<T>* node)
 {
-    if (root->leftchild == nullptr) // Found min.
+    if (node->leftchild == nullptr) // Found min.
     {
-        return root->rightchild;
+        return node->rightchild;
     }
     else
     {
-        root->leftchild = remove_min(root->leftchild); // Continue left.
+        node->leftchild = remove_min(node->leftchild); // Continue left.
 
-        return root;
+        return node;
     }
 }
 
 /**
- * Finds the minimum value in a binary search tree starting from the given root node.
+ * Finds the minimum value in a binary search tree starting from the given node node.
  *
- * @param root The root node of the binary search tree.
+ * @param node The node node of the binary search tree.
  * @return The node containing the minimum value.
  */
 template <typename T>
-Node<T>* BinSearchTree<T>::min(Node<T>* root)
+Node<T>* BinSearchTree<T>::min(Node<T>* node)
 {
-    if (root->leftchild == nullptr)
+    if (node->leftchild == nullptr)
     {
-        return root;
+        return node;
     }
     else
     {
-        return min(root->leftchild);
+        return min(node->leftchild);
     }
 }
 
@@ -262,90 +272,118 @@ Node<T>* BinSearchTree<T>::min(Node<T>* root)
  * Removes the node with the specified item from the binary search tree.
  * If the item is not found, the tree remains unchanged.
  *
- * @param root The root node of the binary search tree.
+ * @param node The node node of the binary search tree.
  * @param item The item to be removed.
- * @return The root node of the modified binary search tree.
+ * @return The node node of the modified binary search tree.
  */
 template <typename T>
-Node<T>* BinSearchTree<T>::remove_helper(Node<T>* root, const T& item)
+Node<T>* BinSearchTree<T>::remove_helper(Node<T>* node, const T& item)
 {
-    if (root == nullptr) // item is not in the tree
+    if (node == nullptr) // item is not in the tree
     {
         return nullptr; // return NULL;
     }
-    else if (item < root->data)
+    else if (item < node->data)
     {
-        root->leftchild = remove_helper(root->leftchild, item);
+        node->leftchild = remove_helper(node->leftchild, item);
     }
-    else if (item > root->data)
+    else if (item > node->data)
     {
-        root->rightchild = remove_helper(root->rightchild, item);
+        node->rightchild = remove_helper(node->rightchild, item);
     }
     else // Found the item, remove it.
     {
-        Node<T>* temp = root;
+        // Maintain the BST property.
+        Node<T>* temp = node;
 
-        if (root->leftchild == nullptr) // Only a right child.
+        /**
+         * If the node to be removed has only one child, then we can simply replace the node with its child.
+         */
+        if (node->leftchild == nullptr) // Only a right child.
         {
-            root = root->rightchild; // Point to the right child.
+            node = node->rightchild; // Point to the right child.
             delete temp;
         }
-        else if (root->rightchild == nullptr) // Only a left child.
+        else if (node->rightchild == nullptr) // Only a left child.
         {
-            root = root->leftchild; // Point to the left child.
+            node = node->leftchild; // Point to the left child.
             delete temp;
         }
-        else // Both children are non-empty.
+        // If the node to be removed has two children, then we replace the node with the minimum value in the right
+        // subtree.
+        else
         {
-            temp = min(root->rightchild); // Find the minimum value in the right subtree.
+            temp = min(node->rightchild); // Find the minimum value in the right subtree.
 
-            root->data       = temp->data;                   // Replace the root's data with the minimum value.
-            root->rightchild = remove_min(root->rightchild); // Remove the minimum value from the right subtree.
+            node->data       = temp->data;                   // Replace the node's data with the minimum value.
+            node->rightchild = remove_min(node->rightchild); // Remove the minimum value from the right subtree.
 
             delete temp;
         }
     }
 
-    return root;
+    return node;
 }
 
 /**
- * @brief Recursively clears the binary search tree starting from the given root.
+ * @brief Recursively clears the binary search tree starting from the given node.
  *
  * @tparam T The type of elements stored in the binary search tree.
- * @param root The root node of the binary search tree.
+ * @param node The node node of the binary search tree.
  */
 template <typename T>
-void BinSearchTree<T>::clear_helper(Node<T>* root)
+void BinSearchTree<T>::clear_helper(Node<T>* node)
 {
-    if (root == nullptr)
+    if (node == nullptr)
     {
         return;
     }
 
-    clear_helper(root->leftchild);
-    clear_helper(root->rightchild);
+    clear_helper(node->leftchild);
+    clear_helper(node->rightchild);
 
-    delete root;
+    delete node;
 }
 
 /**
  * @brief Helper function to print the elements of the binary search tree in in-order traversal.
  *
- * @param root The root node of the binary search tree.
+ * @param node The node node of the binary search tree.
  */
 template <typename T>
-void BinSearchTree<T>::print_helper(Node<T>* root, std::ostream& os) const
+void BinSearchTree<T>::print_helper(Node<T>* node, std::ostream& os) const
 {
-    if (root == nullptr)
+    if (node == nullptr)
     {
         return;
     }
 
     // In-order traversal.
-    print_helper(root->leftchild, os);
-    os << root->data << ' ';
-    print_helper(root->rightchild, os);
+    print_helper(node->leftchild, os);
+    os << node->data << ' ';
+    print_helper(node->rightchild, os);
+}
+
+/**
+ * @brief Deep copies the binary search tree starting from the given node.
+ *
+ * @param node The node node of the binary search tree.
+ * @return A pointer to the root node of the copied binary search tree.
+ */
+template <typename T>
+Node<T>* BinSearchTree<T>::deep_copy(Node<T>* node)
+{
+    if (node == nullptr)
+    {
+        return nullptr;
+    }
+
+    Node<T>* new_node = new Node<T>{node->data};
+
+    new_node->leftchild  = deep_copy(node->leftchild);
+    new_node->rightchild = deep_copy(node->rightchild);
+
+    return new_node;
 }
 
 #endif // BINSEARCHTREE_HPP
