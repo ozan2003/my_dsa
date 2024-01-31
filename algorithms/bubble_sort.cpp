@@ -35,5 +35,5 @@ int main()
 {
     std::vector<int> vec{6, 5, 3, 1, 8, 2, 4, 7};
     bubble_sort(vec);
-    fmt::println("{}", vec);
+    fmt::println("The vector sorted in-place: {}", vec);
 }
