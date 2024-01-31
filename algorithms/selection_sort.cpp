@@ -5,9 +5,8 @@
 #include <vector>
 
 /**
- * Sorts the elements in the given vector using the selection sort algorithm.
- * Note that since it has O(n^2) time complexity, it's not suitable for large
- * containers.
+ * The selection sort algorithm.
+ * The container will be sorted in-place.
  * 
  * @param vec The vector to be sorted.
  */

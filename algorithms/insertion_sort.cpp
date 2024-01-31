@@ -11,7 +11,8 @@ const auto rnd = [gen = std::mt19937{seed}, dist = std::uniform_int_distribution
 };
 
 /**
- * Sorts the elements in-place using the insertion sort algorithm.
+ * The insertion sort algorithm.
+ * The container will be sorted in-place.
  *
  * @param vec The vector to be sorted.
  */
