@@ -1,15 +1,24 @@
 #include "fmt/ranges.h"
 
 #include <algorithm>
+#include <concepts>
 #include <vector>
+
+template <typename T>
+concept Comparable = requires(T a, T b) {
+    {
+        a < b
+    } -> std::convertible_to<bool>;
+};
 
 /**
  * The bubble sort algorithm.
  * The container will be sorted in-place.
- * 
+ *
  * @param vec The vector to be sorted.
  */
-void bubble_sort(std::vector<int>& vec)
+template <Comparable T>
+void bubble_sort(std::vector<T>& vec)
 {
     // The last element will already in the correct position.
     auto end = vec.end() - 1ull; // - 1 for not getting segfault comparing one next item.
@@ -33,7 +42,7 @@ void bubble_sort(std::vector<int>& vec)
 
 int main()
 {
-    std::vector<int> vec{6, 5, 3, 1, 8, 2, 4, 7};
+    std::vector<int> vec{7, 5, 3, 5, 8, 6, 3, 1};
     bubble_sort(vec);
-    fmt::println("The vector sorted in-place: {}", vec);
+    fmt::println("After bubble sort: {}", vec);
 }

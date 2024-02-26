@@ -1,61 +1,57 @@
-#include <algorithm>
-#include <chrono>
-#include <iostream>
-#include <random>
-#include <vector>
+#include "fmt/ranges.h"
+
+#include <algorithm> // std::min_element, std::iter_swap
+#include <chrono>    // std::chrono::steady_clock, std::chrono::duration
+#include <vector>    // std::vector
+#include <concepts>  // std::convertible_to
+
+template <typename T>
+concept Comparable = requires(T a, T b) {
+    {
+        a < b
+    } -> std::convertible_to<bool>;
+};
 
 /**
- * The selection sort algorithm.
- * The container will be sorted in-place.
- * 
+ * Sorts the elements in-place using the selection sort algorithm.
+ * Note that since it has O(n^2) time complexity, it's not suitable for large
+ * containers.
+ *
  * @param vec The vector to be sorted.
  */
-void selection_sort(std::vector<int>& vec)
+template <Comparable T>
+void selection_sort(std::vector<T>& vec)
 {
-    // Start from the beginning.
     // There's no need to look at the last element since the last comparison
     // always with itself.
     for (auto it = vec.begin(); it < vec.end() - 1; ++it)
-    {   
-        // Find the smallest element in the range [it, vec.end()).
-        auto min_item = std::min_element(it, vec.end()); 
-        // Swap the smallest element with the first element in the range [it, vec.end()).
-        std::iter_swap(min_item, it);                   
+    {
+        // Find the smallest element in the range [it++, vec.end()).
+        auto min_item = std::min_element(it, vec.end());
+        // Swap the smallest element with the first element in the range [it++, vec.end())
+        // through iterators.
+        std::iter_swap(min_item, it);
     }
 }
 
-const auto seed = std::random_device{}();
+namespace chr = std::chrono;
 
-constexpr int         MIN_LIMIT{-50};
-constexpr int         MAX_LIMIT{50};
-constexpr std::size_t SIZE{25};
-
-const auto rnd = [engine = std::mt19937{seed},
-                  distr  = std::uniform_int_distribution{MIN_LIMIT, MAX_LIMIT}]() mutable -> int
+int main()
 {
-    return distr(engine);
-};
+    constexpr std::size_t SIZE{15}; // Size of the vector.
 
-auto main() -> int
-{
-    std::vector<int> vec(SIZE);
-    std::generate(vec.begin(), vec.end(), rnd);
-    
-    for (const auto& item : vec)
-    {
-        std::cout << item << ' ';
-    }
+    std::vector vec{8, 5, 6, 3, 2, 4, 7};
 
-    const auto start = std::chrono::steady_clock::now();
+    fmt::println("Before selection sort: {}", vec);
+
+    // Time the function.
+    const auto start = chr::steady_clock::now();
     selection_sort(vec);
-    const auto end = std::chrono::steady_clock::now();
+    const auto end = chr::steady_clock::now();
 
-    std::cout << '\n';
-    for (const auto& item : vec)
-    {
-        std::cout << item << ' ';
-    }
+    fmt::println("After selection sort: {}", vec);
 
-    const std::chrono::duration<double, std::nano> elapsed{end - start};
-    std::cout << "\nElapsed time: " << elapsed.count() << "ns\n";
+    // Print the elapsed time.
+    const chr::duration<double, std::nano> elapsed{end - start};
+    fmt::print("Elapsed time: {:.4f}ns.\n", elapsed.count());
 }

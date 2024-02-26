@@ -1,18 +1,21 @@
 #include <iostream>
+#include <ranges>
 #include <vector>
 
-constexpr int SIZE{20'000'000};
-
-/*
- * @brief Perform binary search. The container must be sorted.
- * @param vec The array to be worked on. 
- * @param target The number to be searched on array.
- * @return The index of "target". -1 if it's not found.
+/**
+ * @brief Perform binary search. The range must be sorted.
+ * @tparam Rng The type of the range.
+ * @param rng The range to be searched.
+ * @param target The number to be searched on range.
+ * @return The iterator to the found element, one past the end if not found.
  */
-int bin_search(const std::vector<int>& vec, const int target)
+template <std::ranges::range Rng>
+std::vector<int>::const_iterator bin_search(
+    const Rng&                             rng,
+    const std::ranges::range_value_t<Rng>& target)
 {
-    auto front = vec.begin();   // The first element.
-    auto rear  = vec.end() - 1; // The last element.
+    auto front = rng.begin();   // The first element.
+    auto rear  = rng.end() - 1; // The last element.
 
     while (front <= rear)
     {
@@ -33,18 +36,17 @@ int bin_search(const std::vector<int>& vec, const int target)
         }
         else
         {
-            // If the target is equal to middle,
-            // return its index by returning the distance between the first.
-            // std::vector<T>::difference_type is actually std::ptrdiff_t which is long long.
-            return static_cast<int>(mid - vec.begin());
+            return mid;
         }
     }
-
-    return -1; // Indicate nothing is found.
+    // Indicate nothing is found by returning non-valid iterator.
+    return rng.end();
 }
 
 int main()
 {
+    constexpr std::size_t SIZE{20'000'000ull};
+
     std::vector<int> v;
     v.reserve(SIZE);
 
@@ -53,5 +55,12 @@ int main()
         v.push_back(static_cast<int>(i));
     }
 
-    std::cout << bin_search(v, 19'090'112) << '\n';
+    if (auto result = bin_search(v, 19'090'112); result != v.end())
+    {
+        std::cout << *result << '\n';
+    }
+    else
+    {
+        std::cout << "Not found\n";
+    }
 }

@@ -1,7 +1,9 @@
+#include "fmt/ranges.h"
+
 #include <algorithm>
-#include <iostream>
 #include <vector>
 #include <random>
+#include <concepts>
 
 const auto seed = std::random_device{}();
 
@@ -10,20 +12,27 @@ const auto rnd = [gen = std::mt19937{seed}, dist = std::uniform_int_distribution
     return dist(gen);
 };
 
+template <typename T>
+concept Comparable = requires(T a, T b) {
+    {
+        a < b
+    } -> std::convertible_to<bool>;
+};
+
 /**
- * The insertion sort algorithm.
- * The container will be sorted in-place.
+ * Sorts the elements in-place using the insertion sort algorithm.
  *
  * @param vec The vector to be sorted.
  */
-void insertion_sort(std::vector<int>& vec)
+template <Comparable T>
+void insertion_sort(std::vector<T>& vec)
 {
     // Go left to right.
-    for (auto curr = vec.begin(); curr != vec.end(); ++curr)
+    for (auto curr = vec.begin() + 1; curr != vec.end(); ++curr)
     {
         // Check each element and compare it to the elements to its left.
         // Track our previous element in case we need to swap.
-        for (auto prev = curr - 1; prev >= vec.begin(); --prev)
+        for (auto prev = curr - 1; vec.begin() <= prev; --prev)
         {
             // Swap if the previous element is greater than the current element
             // until we're at the beginning.
@@ -40,18 +49,7 @@ int main()
     std::vector<int> vec(10);
     std::generate(vec.begin(), vec.end(), rnd);
 
-    std::cout << "Before: ";
-    for (const auto& item : vec)
-    {
-        std::cout << item << ' ';
-    }
-
+    fmt::println("Before: {}", vec);
     insertion_sort(vec);
-
-    std::cout << "\nAfter: ";
-    for (const auto& item : vec)
-    {
-        std::cout << item << ' ';
-    }
-    std::cout << '\n';
+    fmt::println("After:  {}", vec);
 }
