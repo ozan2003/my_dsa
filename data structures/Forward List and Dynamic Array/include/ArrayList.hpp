@@ -9,16 +9,16 @@
 #include <iostream> // operator<<
 #include <utility>  // std::move, std::exchange
 
-constexpr int INITIAL_SIZE{2};
-constexpr int GROWTH_FACTOR{2};
+constexpr std::size_t INITIAL_SIZE{2ull};
+constexpr std::size_t GROWTH_FACTOR{2ull};
 
 template <typename T>
 class ArrayList : public List<T>
 {
 private:
-    int m_capacity{};   // Maximum size of list.
-    int m_size{};       // Current number of list elements.
-    T*  m_list_array{}; // Array holding list of elements.
+    std::size_t m_capacity{};   // Maximum size of list.
+    std::size_t m_size{};       // Current number of list elements.
+    T*          m_list_array{}; // Array holding list of elements.
 
     void reserve()
     {
@@ -31,7 +31,7 @@ private:
 
         T* temp = new T[m_capacity]; // Allocate new array in the heap.
 
-        for (int i{}; i < m_size; ++i)
+        for (std::size_t i{}; i < m_size; ++i)
         {
             temp[i] = std::move(m_list_array[i]); // Move all items of original array.
         }
@@ -43,7 +43,7 @@ private:
 public:
     ArrayList() = default;
 
-    ArrayList(const int size, const T& value = T{})
+    ArrayList(const std::size_t size, const T& value = T{})
         : m_capacity{size * GROWTH_FACTOR},
           m_size{size},
           m_list_array{new T[m_capacity]{value}} // ArrayList elements are initialized by value.
@@ -51,11 +51,11 @@ public:
     }
 
     ArrayList(const std::initializer_list<T> i_list)
-        : ArrayList(static_cast<int>(i_list.size()))
+        : ArrayList(i_list.size())
     // Don't use braces as initializer_list constructor uses it.
     // Otherwise this constructor would call itself.
     {
-        int count{};
+        std::size_t count{};
         for (const auto& item : i_list)
         {
             m_list_array[count] = std::move(item);
@@ -74,7 +74,7 @@ public:
     ArrayList(const ArrayList& other)
         : List<T>{}, m_capacity{other.m_capacity}, m_size{other.m_size}, m_list_array{new T[other.m_capacity]{}}
     {
-        for (int i{}; i < m_size; ++i)
+        for (std::size_t i{}; i < m_size; ++i)
         {
             m_list_array[i] = other.m_list_array[i];
         }
@@ -91,7 +91,7 @@ public:
             m_size       = other.m_size;
             m_list_array = new T[other.m_capacity];
 
-            for (int i{}; i < m_size; ++i)
+            for (std::size_t i{}; i < m_size; ++i)
             {
                 m_list_array[i] = other.m_list_array[i];
             }
@@ -143,20 +143,20 @@ public:
     {
         delete[] m_list_array;
         m_list_array = nullptr;
-        m_capacity   = 0;
-        m_size       = 0;
+        m_capacity   = 0ull;
+        m_size       = 0ull;
     }
 
     // Insert "item" at given position.
-    void insert(const unsigned pos, const T& item) override
+    void insert(const std::size_t pos, const T& item) override
     {
         if (m_size == m_capacity)
         {
             reserve();
         }
-        assert(static_cast<int>(pos) < m_size && "Out of range.\n");
+        assert(pos < m_size && "Out of range.\n");
 
-        for (int s{m_size}; static_cast<int>(pos) < s; --s) // Shift elements up...
+        for (std::size_t s{m_size}; pos < s; --s) // Shift elements up...
         {
             m_list_array[s] = m_list_array[s - 1]; // ...to make room.
         }
@@ -190,14 +190,14 @@ public:
     }
 
     // Remove and return the current element.
-    void remove(const unsigned pos) override
+    void remove(const std::size_t pos) override
     {
-        assert(static_cast<int>(pos) < m_size && "No element.\n");
+        assert(pos < m_size && "No element.\n");
 
         // T item = m_list_array[pos]; // Copy the item.
 
         // m_size - 1, because we're dealing with array indexes (array[size] is out of bounds).
-        for (int i{static_cast<int>(pos)}; i < m_size - 1; ++i)
+        for (std::size_t i{pos}; i < m_size - 1; ++i)
         {
             m_list_array[i] = m_list_array[i + 1]; // Shift elements down.
         }
@@ -216,7 +216,7 @@ public:
     }
 
     // Return list size.
-    int size() const override
+    std::size_t size() const override
     {
         return m_size;
     }
@@ -226,13 +226,13 @@ public:
         return size() == 0;
     }
 
-    T& operator[](const int pos) override
+    T& operator[](const std::size_t pos) override
     {
         assert(!empty() && "No current element.\n");
         return m_list_array[pos];
     }
 
-    const T& operator[](const int pos) const override
+    const T& operator[](const std::size_t pos) const override
     {
         assert(!empty() && "No current element.\n");
         return m_list_array[pos];

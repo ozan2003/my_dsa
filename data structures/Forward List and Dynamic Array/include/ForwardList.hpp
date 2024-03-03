@@ -3,8 +3,11 @@
 
 #include "List.hpp"
 #include "Node.hpp"
+#include "ForwardListIterator.hpp"
 
+#include <cstddef>  // std::size_t
 #include <iostream> // operator<<
+#include <utility>  // std::move, std::exchange
 
 template <typename T>
 class ForwardList : public List<T>
@@ -13,12 +16,12 @@ private:
     Node<T>* m_head{nullptr};
     Node<T>* m_tail{nullptr};
 
-    int m_size{};
+    std::size_t m_size{};
 
 public:
     ForwardList() = default;
 
-    ForwardList(std::initializer_list<T> i_list)
+    ForwardList(const std::initializer_list<T> i_list)
     {
         for (const auto& item : i_list)
         {
@@ -34,9 +37,21 @@ public:
 
         while (temp != nullptr)
         {
+            // Append to our list and update the other's pointer position.
             append(temp->data);
             temp = temp->next;
         }
+    }
+
+    ForwardList(ForwardList<T>&& other) noexcept
+        // Member-wise move.
+        : m_head{std::exchange(other.m_head, nullptr)},
+          m_tail{std::exchange(other.m_tail, nullptr)},
+          m_size{std::exchange(other.m_size, 0ull)}
+    {
+        other.m_head = nullptr;
+        other.m_tail = nullptr;
+        other.m_size = 0ull;
     }
 
     ~ForwardList()
@@ -58,7 +73,7 @@ public:
         if (&other != this)
         {
             // Delete the current list one by one.
-            while (m_size > 0)
+            while (m_size > 0ull)
             {
                 remove_back();
             }
@@ -76,24 +91,44 @@ public:
         return *this;
     }
 
-    Node<T>* head() const
+    ForwardList& operator=(ForwardList<T>&& other) noexcept
     {
-        return m_head;
+        if (&other != this)
+        {
+            // Delete the current list one by one.
+            while (m_size > 0ull)
+            {
+                remove_back();
+            }
+
+            m_head = std::exchange(other.m_head, nullptr);
+            m_tail = std::exchange(other.m_tail, nullptr);
+            m_size = std::exchange(other.m_size, 0ull);
+        }
+
+        return *this;
     }
 
-    Node<T>* tail() const
+    // Iterator pointing at beginning.
+    ForwardListIterator<T> begin() const
     {
-        return m_tail;
+        return ForwardListIterator{m_head};
     }
 
-    int size() const override
+    // Iterator pointing one past the end.
+    ForwardListIterator<T> end() const
+    {
+        return ForwardListIterator{m_tail->next};
+    }
+
+    std::size_t size() const override
     {
         return m_size;
     }
 
     bool empty() const override
     {
-        return size() == 0;
+        return size() == 0ull;
     }
 
     void prepend(const T& item)
@@ -135,15 +170,15 @@ public:
     }
 
     // Avoid illegal indexes by making pos unsigned.
-    void insert(const unsigned pos, const T& item) override
+    void insert(const std::size_t pos, const T& item) override
     {
         // If the position is the beginning of the list, prepend the new node.
-        if (pos == 0)
+        if (pos == 0ull)
         {
             prepend(item);
         }
         // If the position is beyond the end of the list, append the new node.
-        else if (static_cast<int>(pos) >= m_size)
+        else if (pos >= m_size)
         {
             append(item);
         }
@@ -154,7 +189,7 @@ public:
 
             // Starting from the head, go to the one past the position.
             auto temp = m_head;
-            for (int i{}; i < static_cast<int>(pos) - 1; ++i)
+            for (std::size_t i{}; i < pos - 1ull; ++i)
             {
                 temp = temp->next;
             }
@@ -224,13 +259,13 @@ public:
     }
 
     // Avoid illegal indexes by making pos unsigned.
-    void remove(const unsigned pos) override
+    void remove(const std::size_t pos) override
     {
         if (pos == 0)
         {
             remove_front();
         }
-        else if (pos == m_size - 1)
+        else if (pos >= m_size)
         {
             remove_back();
         }
@@ -239,7 +274,7 @@ public:
             Node<T>* temp = m_head;
 
             // Go to the one past the pos.
-            for (int i{}; i < static_cast<int>(pos) - 1; ++i)
+            for (std::size_t i{}; i < pos - 1ull; ++i)
             {
                 temp = temp->next;
             }
@@ -264,11 +299,11 @@ public:
         // return removed_data;
     }
 
-    T& operator[](const int pos)
+    T& operator[](const std::size_t pos) override
     {
         Node<T>* temp = m_head;
 
-        for (int i{}; i != pos; ++i)
+        for (std::size_t i{}; i != pos; ++i)
         {
             temp = temp->next;
         }
@@ -276,11 +311,11 @@ public:
         return temp->data;
     }
 
-    const T& operator[](const int pos) const
+    const T& operator[](const std::size_t pos) const override
     {
         Node<T>* temp = m_head;
 
-        for (int i{}; i != pos; ++i)
+        for (std::size_t i{}; i != pos; ++i)
         {
             temp = temp->next;
         }
@@ -307,13 +342,25 @@ public:
     }
 };
 
+// Print the list.
 template <typename T>
-std::ostream& operator<<(std::ostream& os, const ForwardList<T>& llist)
+std::ostream& operator<<(std::ostream& os, const ForwardList<T>& list)
 {
-    for (auto i = llist.head(); i != nullptr; i = i->next)
+    for (const auto& item : list)
     {
-        os << i->data << ' ';
+        os << item << ' ';
     }
+
     return os;
 }
+
+//template <typename T>
+//std::ostream& operator<<(std::ostream& os, const ForwardList<T>& llist)
+//{
+//    for (auto i = llist.head(); i != nullptr; i = i->next)
+//    {
+//        os << i->data << ' ';
+//    }
+//    return os;
+//}
 #endif // FORWARDLIST_HPP

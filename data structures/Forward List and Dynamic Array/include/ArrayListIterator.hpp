@@ -40,8 +40,24 @@ public:
         return *this;
     }
 
+    // To move one position forward. (Post-increment)
+    ArrayListIterator& operator++(int)
+    {
+        ArrayListIterator temp{*this}; // Save the current iterator position.
+        ++m_ptr;
+        return temp;
+    }
+
+    // To move one position backward. (Post-decrement)
+    ArrayListIterator& operator--(int)
+    {
+        ArrayListIterator temp{*this}; // Save the current iterator position.
+        --m_ptr;
+        return temp;
+    }
+
     // To get the value at the current iterator position.
-    reference operator*()
+    reference operator*() const
     {
         return *m_ptr;
     }
@@ -120,5 +136,4 @@ public:
 private:
     pointer m_ptr{nullptr};
 };
-
 #endif // ARRAYLISTITERATOR_HPP
