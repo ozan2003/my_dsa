@@ -7,7 +7,7 @@
 
 const auto seed = std::random_device{}();
 
-const auto rnd = [gen = std::mt19937{seed}, dist = std::uniform_int_distribution{1, 25}]() mutable -> int
+const auto rnd = [gen = std::mt19937{seed}, dist = std::uniform_int_distribution{-40, 40}]() mutable -> int
 {
     return dist(gen);
 };
@@ -28,17 +28,17 @@ template <Comparable T>
 void insertion_sort(std::vector<T>& vec)
 {
     // Go left to right.
-    for (auto curr = vec.begin() + 1; curr != vec.end(); ++curr)
+    for (auto curr = std::next(vec.begin()); curr != vec.end(); ++curr)
     {
         // Check each element and compare it to the elements to its left.
         // Track our previous element in case we need to swap.
-        for (auto prev = curr - 1; vec.begin() <= prev; --prev)
+        for (auto prev = curr; prev != vec.begin(); --prev)
         {
-            // Swap if the previous element is greater than the current element
-            // until we're at the beginning.
-            if (*prev > *(prev + 1))
+            // Move prev to the left until it's less than the element to its
+            // left.
+            if (*prev < *(prev - 1))
             {
-                std::iter_swap(prev, prev + 1);
+                std::iter_swap(prev, prev - 1);
             }
         }
     }
