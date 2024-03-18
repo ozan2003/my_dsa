@@ -2,7 +2,7 @@
 #include <cmath>    // std::pow
 #include <format>   // std::format
 #include <iostream> // std::cout, std::cerr
-#include <ranges>   // std::views::split
+#include <ranges>   // std::views::split, std::views::transform
 #include <stack>    // std::stack
 #include <string>   // std::string
 
@@ -20,24 +20,26 @@ double postfix_eval(const std::string& postfix)
     std::stack<double> nums{};
 
     // Read the postfix token by token.
-    for (const auto& token : std::views::split(postfix, ' '))
+    for (const auto& token : std::views::split(postfix, ' ') |
+                                 std::views::transform(
+                                     [](auto&& r)
+                                     {
+                                         return std::string(r.begin(), r.end());
+                                     }))
     {
-        // Convert the token to a piece of string.
-        const std::string token_piece(token.begin(), token.end());
-
         // First character of the token.
-        // This'll be used to check if the token is a number or an operator.
-        const char ch = *token_piece.begin();
+        // This'll be used to determine if the token is a number or an operator.
+        const char ch = token.front();
 
         // If the token starts with a digit or a minus sign (indicating
         // negative number)...
-        if (std::isdigit(ch) || (ch == '-' && token_piece.size() > 1))
+        if (std::isdigit(ch) || (ch == '-' && token.size() > 1))
         {
             // ... push the (whole) number onto the stack.
-            nums.push(std::stod(token_piece));
+            nums.push(std::stod(token));
         }
         // If the token is an operator...
-        else if (is_operator(ch))
+        else if (is_operator(ch) && nums.size() >= 2)
         {
             // ... pop and store the top two elements from the stack.
             const auto second = nums.top();
@@ -87,7 +89,7 @@ double postfix_eval(const std::string& postfix)
         {
             throw std::invalid_argument(
                 std::format("Unknown character '{}'. Check your input.",
-                            token_piece));
+                            token.front()));
         }
     }
     // The result is the only element left on the stack.
