@@ -1,37 +1,36 @@
-#include "fmt/ranges.h"
-
+#include <iostream>
 #include <algorithm>
-#include <concepts>
 #include <vector>
-
-template <typename T>
-concept Comparable = requires(T a, T b) {
-    {
-        a < b
-    } -> std::convertible_to<bool>;
-};
+#include <concepts>
 
 /**
  * The bubble sort algorithm.
  * The container will be sorted in-place.
  *
  * @param vec The vector to be sorted.
+ * @param func The comparison function.
+ *             The signature should be equivalent to the following:
+ *             bool cmp(const T& a, const T& b);
  */
-template <Comparable T>
-void bubble_sort(std::vector<T>& vec)
+template <typename T, typename Pred = std::less<T>>
+    requires std::totally_ordered<T> && std::predicate<Pred, const T&, const T&>
+void bubble_sort(std::vector<T>& vec, Pred&& pred = Pred{})
 {
-    // The last element will already in the correct position.
-    auto end = vec.end() - 1ull; // - 1 for not getting segfault comparing one next item.
+    // The last element will already be in the correct position.
+    // - 1 for not getting segfault comparing one next item.
+    auto end = vec.end() - 1; 
 
-    while (!std::is_sorted(vec.begin(), vec.end()))
+    // The comparator fails when end is at the beginning of the vector
+    // since there is no element in range [begin, end).
+    while (vec.begin() != end && !std::is_sorted(vec.begin(), vec.end(), pred))
     {
         // Starting from the beginning, compare every adjacent pair.
         for (auto beg = vec.begin(); beg != end; ++beg)
         {
             // Swap them if they are in the wrong order.
-            if (*beg > *(beg + 1))
+            if (auto next = std::next(beg); !pred(*beg, *(next)))
             {
-                std::iter_swap(beg, beg + 1);
+                std::iter_swap(beg, next);
             }
         }
         // The last element is now in the correct position, so we don't need to
@@ -43,6 +42,10 @@ void bubble_sort(std::vector<T>& vec)
 int main()
 {
     std::vector<int> vec{7, 5, 3, 5, 8, 6, 3, 1};
-    bubble_sort(vec);
-    fmt::println("After bubble sort: {}", vec);
+    bubble_sort(vec, std::less_equal{});
+
+    for (const auto& elem : vec)
+    {
+        std::cout << elem << ' ';
+    }
 }
