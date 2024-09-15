@@ -1,8 +1,11 @@
 #include <algorithm>
+#include <concepts>
 #include <iostream>
+#include <iterator>
 #include <list>
 #include <ranges>
-#include <iterator>
+
+namespace rs = std::ranges;
 
 /**
  * The merge sort algorithm.
@@ -10,9 +13,18 @@
  *
  * @param begin The begin iterator of the range.
  * @param end The end iterator of the range.
+ * @param pred The predicate to use for comparison.
+ *             Defaults to std::less<>. For custom types, you can provide
+ *             your own predicate, its signature should be equivalent to
+ *            `bool pred(const T&, const T&)`.
  */
-template <std::bidirectional_iterator Iter>
-void merge_sort(const Iter& begin, const Iter& end)
+template <std::bidirectional_iterator Iter, typename Pred = std::less<>>
+    requires std::predicate<Pred,
+                            std::iter_value_t<Iter>,
+                            std::iter_value_t<Iter>>
+             && std::totally_ordered<std::iter_value_t<Iter>>
+             //&& std::sortable<Iter, Pred>
+void merge_sort(const Iter& begin, const Iter& end, Pred&& pred = Pred{})
 {
     if (std::distance(begin, end) <= 1)
     {
@@ -20,23 +32,25 @@ void merge_sort(const Iter& begin, const Iter& end)
     }
 
     // Split the range into two halves.
-    const auto mid = std::next(begin, std::distance(begin, end) / 2);
-    const std::ranges::subrange left(begin, mid);
-    const std::ranges::subrange right(mid, end);
+    const auto         mid = std::next(begin, std::distance(begin, end) / 2);
+    const rs::subrange left(begin, mid);
+    const rs::subrange right(mid, end);
 
     // Recursively sort the two halves.
-    merge_sort(left.begin(), left.end());
-    merge_sort(right.begin(), right.end());
+    merge_sort(left.begin(), left.end(), pred);
+    merge_sort(right.begin(), right.end(), pred);
 
     // Merge the halves sorted.
-    std::ranges::inplace_merge(left.begin(), mid, right.end());
+    rs::inplace_merge(left.begin(), mid, right.end(), pred);
 }
 
 int main()
 {
     std::list nums{3, 1, 4, 1, 5, 9, 2, 6, 5, 3, 5};
 
-    merge_sort(nums.begin(), nums.end());
+    merge_sort(nums.begin(),
+               nums.end(),
+               [](const int a, const int b) noexcept { return a < b; });
 
     for (const auto& item : nums)
     {

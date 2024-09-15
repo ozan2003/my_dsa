@@ -1,22 +1,15 @@
-#include "fmt/ranges.h"
-
 #include <algorithm>
-#include <vector>
-#include <random>
 #include <concepts>
+#include <iostream>
+#include <random>
+#include <vector>
 
 const auto seed = std::random_device{}();
 
-const auto rnd = [gen = std::mt19937{seed}, dist = std::uniform_int_distribution{-40, 40}]() mutable -> int
+const auto rnd = [gen  = std::mt19937{seed},
+                  dist = std::uniform_int_distribution{0, 40}]() mutable -> int
 {
     return dist(gen);
-};
-
-template <typename T>
-concept Comparable = requires(T a, T b) {
-    {
-        a < b
-    } -> std::convertible_to<bool>;
 };
 
 /**
@@ -24,8 +17,8 @@ concept Comparable = requires(T a, T b) {
  *
  * @param vec The vector to be sorted.
  */
-template <Comparable T>
-void insertion_sort(std::vector<T>& vec)
+template <std::totally_ordered T, std::predicate<T, T> Pred = std::less<T>>
+void insertion_sort(std::vector<T>& vec, Pred&& pred = Pred{})
 {
     // Go left to right.
     for (auto curr = std::next(vec.begin()); curr != vec.end(); ++curr)
@@ -44,12 +37,23 @@ void insertion_sort(std::vector<T>& vec)
     }
 }
 
+void print(const std::vector<int>& vec)
+{
+    for (const auto& elem : vec)
+    {
+        std::cout << elem << ' ';
+    }
+    std::cout << '\n';
+}
+
 int main()
 {
     std::vector<int> vec(10);
     std::generate(vec.begin(), vec.end(), rnd);
 
-    fmt::println("Before: {}", vec);
-    insertion_sort(vec);
-    fmt::println("After:  {}", vec);
+    std::cout << "Before sorting: ";
+    print(vec);
+    insertion_sort(vec, std::less_equal{});
+    std::cout << "After sorting:  ";
+    print(vec);
 }
