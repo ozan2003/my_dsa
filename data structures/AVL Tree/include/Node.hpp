@@ -23,7 +23,7 @@ struct Node
     // Check whether node has childs.
     bool isleaf() const
     {
-        return !(leftchild && rightchild);
+        return leftchild == nullptr && rightchild == nullptr;
     }
 };
 #endif // NODE_HPP
