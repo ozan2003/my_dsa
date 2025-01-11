@@ -112,31 +112,28 @@ namespace helper
     }
 
     /**
-     * Inserts a new node with the given item into the tree rooted
-     * at the specified node. If the node is nullptr, a new node is created with
-     * the given item and returned as the new node. If the item is less than the
-     * node's data, it is inserted to the left of the node. If the item is
-     * greater than or equal to the node's data, it is inserted to the right of
-     * the node.
-     *
-     * @param node The node of the tree.
-     * @param item The item to be inserted.
-     * @return The node of the modified binary search tree.
+     * @brief Inserts a new node with the given item into the tree
+     * 
+     * @param node The root node of the subtree
+     * @param item The item to be inserted
+     * @return Node<T>* The root node of the modified subtree
      */
     template <typename T>
     Node<T>* insert(Node<T>* node, const T& item)
     {
-        if (node == nullptr) // Done.
+        if (node == nullptr)
         {
             return new Node<T>{item};
         }
 
-        if (item < node->data) // Insert to the right if item is less than node.
+        if (item < node->data)
         {
+            // Insert to the left subtree if item is less than node
             node->leftchild = insert(node->leftchild, item);
         }
-        else // Insert to the left if item is less than node.
+        else
         {
+            // Insert to the right subtree if item is greater than or equal
             node->rightchild = insert(node->rightchild, item);
         }
         return node;
