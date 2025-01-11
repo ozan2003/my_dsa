@@ -119,35 +119,30 @@ public:
     }
 
     /**
-     * @brief Finds the specified item in the tree.
-     *
-     * @tparam T The type of the item.
-     * @param item The item to find.
-     * @return Pointer to the node containing the item; nullptr if the item
-     *         was not found.
+     * @brief Finds a node containing the specified item
+     * 
+     * @param item The value to search for
+     * @return Node<T>* Pointer to the node containing the item, or nullptr if not found
      */
     Node<T>* find(const T& item) const
     {
-        Node<T>* node = m_root; // Start from the root.
-        while (node != nullptr)
+        Node<T>* current = m_root;
+        while (current != nullptr)
         {
-            // Check left if item is smaller than node.
-            if (item < node->data) 
+            if (item < current->data)
             {
-                node = node->leftchild;
+                current = current->leftchild;
             }
-            // Check right if item is greater than node.
-            else if (item > node->data) 
+            else if (item > current->data)
             {
-                node = node->rightchild;
+                current = current->rightchild;
             }
             else
             {
-                return &node; // Found it.
+                return current;
             }
         }
-
-        return nullptr; // Empty tree or item not found.
+        return nullptr;
     }
 
     /**
