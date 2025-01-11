@@ -48,14 +48,14 @@ private:
 
     /**
      * @brief Verifies if the AVL tree maintains its balance property.
-     * 
-     * This function recursively checks if each node in the tree satisfies the AVL balance property,
-     * which requires that the difference in height between left and right subtrees of any node
-     * must not exceed 1.
-     * 
+     *
+     * This function recursively checks if each node in the tree satisfies the
+     * AVL balance property, which requires that the difference in height
+     * between left and right subtrees of any node must not exceed 1.
+     *
      * @param node The root node of the subtree to verify.
-     * @return true if the subtree rooted at node maintains AVL balance property,
-     *         false otherwise.
+     * @return true if the subtree rooted at node maintains AVL balance
+     * property, false otherwise.
      */
     bool verify_balance(Node<T>* node) const;
     int  count_nodes(Node<T>* node) const;
@@ -238,7 +238,9 @@ public:
                TraversalOrder order = TraversalOrder::InOrder) const
     {
         if (m_root == nullptr)
+        {
             return;
+        }
         print_helper(m_root, os, order);
     }
 
@@ -247,7 +249,9 @@ public:
                       TraversalOrder order) const
     {
         if (node == nullptr)
+        {
             return;
+        }
 
         switch (order)
         {
@@ -285,7 +289,9 @@ public:
     int count_nodes(Node<T>* node) const
     {
         if (node == nullptr)
+        {
             return 0;
+        }
         return 1 + count_nodes(node->leftchild) + count_nodes(node->rightchild);
     }
 
