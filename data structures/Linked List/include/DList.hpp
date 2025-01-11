@@ -2,6 +2,7 @@
 #ifndef DLIST_HPP
 #define DLIST_HPP
 
+#include "DListIterator.hpp"
 #include "Node.hpp"
 
 #include <cstddef> // std::size_t
@@ -27,7 +28,7 @@ public:
     {
         for (const auto& item : i_list)
         {
-            append(item);
+            push_back(item);
         }
     }
 
@@ -40,7 +41,7 @@ public:
         while (temp != nullptr)
         {
             // Constructing the list by appending the elements.
-            append(temp->data);
+            push_back(temp->data);
             temp = temp->next; // Keep track of the other's pointer.
         }
     }
@@ -81,7 +82,7 @@ public:
             auto other_head = other.m_head;
             while (other_head != nullptr)
             {
-                append(other_head->data);
+                push_back(other_head->data);
                 other_head = other_head->next;
             }
         }
@@ -108,18 +109,45 @@ public:
     {
         while (m_size > 0ULL)
         {
-            remove_back();
+            pop_back();
         }
     }
 
-    Node<T>* head() const
+    DListIterator<T> begin() const
     {
-        return m_head;
+        return DListIterator{m_head};
     }
 
-    Node<T>* tail() const
+    DListIterator<T> rbegin() const
     {
-        return m_tail;
+        return DListIterator{m_tail};
+    }
+
+    DListIterator<T> end() const
+    {
+        // The end is nullptr.
+        return DListIterator{m_tail->next};
+    }
+
+    DListIterator<T> rend() const
+    {
+        // The rend is nullptr.
+        return DListIterator{m_head->prev};
+    }
+
+    T& front()
+    {
+        return *begin();
+    }
+
+    T& back()
+    {
+        return *rbegin();
+    }
+
+    const T& front() const
+    {
+        return m_head->data;
     }
 
     std::size_t size() const
@@ -127,7 +155,12 @@ public:
         return m_size;
     }
 
-    void prepend(const T& item)
+    bool empty() const
+    {
+        return m_size == 0ULL;
+    }
+
+    void push_front(const T& item)
     {
         // Create a node holding our item and its next pointer pointing to the head.
         auto new_item = new Node<T>{item, nullptr, m_head};
@@ -148,7 +181,7 @@ public:
         m_size++;
     }
 
-    void append(const T& item)
+    void push_back(const T& item)
     {
         // Create a node whose prev pointer pointing to the tail.
         auto new_item = new Node<T>{item, m_tail};
@@ -174,12 +207,12 @@ public:
         // If the position is the end of the list, append the new node.
         if (pos >= m_size)
         {
-            append(item);
+            push_back(item);
         }
         // If the position is the beginning of the list, prepend the new node.
         else if (pos == 0ULL)
         {
-            prepend(item);
+            push_front(item);
         }
         else
         {
@@ -208,7 +241,7 @@ public:
         }
     }
 
-    void remove_front()
+    void pop_front()
     {
         // If there's no element, exit.
         if (m_head == nullptr)
@@ -233,7 +266,7 @@ public:
         }
     }
 
-    void remove_back()
+    void pop_back()
     {
         Node<T>* temp = m_tail;
 
@@ -266,7 +299,7 @@ public:
     {
         if (pos >= m_size)
         {
-            remove_back();
+            pop_back();
         }
         else
         {
@@ -280,7 +313,7 @@ public:
             // If the marked is the head.
             if (marked == m_head)
             {
-                remove_front();
+                pop_front();
                 return;
             }
             else
@@ -331,37 +364,43 @@ public:
     // Reverse the pointers.
     void reverse()
     {
-        Node<T>* temp    = nullptr; // To hold the previous node.
-        Node<T>* current = m_head;  // Start from the beginning.
+        // Start from the head.
+        Node<T>* temp = m_head;
+        Node<T>* prev = nullptr;
+        Node<T>* next = nullptr;
 
-        while (current != nullptr)
+        // Traverse the list.
+        while (temp != nullptr)
         {
-            // Store the previous node in a temporary variable.
-            temp = current->prev;
-
-            // Swap the 'prev' and 'next' pointers of the current node.
-            current->prev = current->next;
-            current->next = temp;
-
+            // Store the next element.
+            next = temp->next;
+            // Reverse the pointers.
+            temp->next = prev;
+            temp->prev = next;
             // Move forward.
-            current = current->prev;
+            prev = temp;
+            temp = next;
         }
 
-        if (temp != nullptr)
-        {
-            // If the list is not empty. Update the head.
-            m_head = temp->prev;
-        }
+        // Swap the head and the tail.
+        std::swap(m_head, m_tail);
     }
 };
 
 template <typename T>
-std::ostream& operator<<(std::ostream& os, const DList<T>& dlist)
+std::ostream& operator<<(std::ostream& out, const DList<T>& dlist)
 {
-    for (auto i = dlist.head(); i != nullptr; i = i->next)
+    // Format: [item1, item2, item3, ...]
+    out << '[';
+    for (auto it = dlist.begin(); it != dlist.end(); ++it)
     {
-        os << i->data << ' ';
+        out << *it;
+        if (it != dlist.rbegin())
+        {
+            out << ", ";
+        }
     }
-    return os;
+    out << ']';
+    return out;
 }
 #endif // DLIST_HPP
