@@ -1,122 +1,60 @@
 #ifndef HELPER_HPP
 #define HELPER_HPP
 
-#include "BinSearchTree.hpp"
 #include "Node.hpp"
 
 #include <iostream>
 
 namespace helper
 {
+
     /**
-     * Removes the node with the specified item from the tree.
-     * If the item is not found, the tree remains unchanged.
+     * Finds the minimum value node in the tree.
      *
-     * @param node The node node of the tree.
-     * @param item The item to be removed.
-     * @return The node node of the modified binary search tree.
+     * @param node The root node of the tree.
+     * @return The node containing the minimum value.
      */
     template <typename T>
-    Node<T>* remove(Node<T>* node, const T& item)
+    Node<T>* min(Node<T>* node)
     {
-        if (node == nullptr) // item is not in the tree
+        if (node == nullptr || node->leftchild == nullptr)
         {
-            return nullptr; // return NULL;
+            return node;
         }
-        else if (item < node->data)
-        {
-            node->leftchild = remove(node->leftchild, item);
-        }
-        else if (item > node->data)
-        {
-            node->rightchild = remove(node->rightchild, item);
-        }
-        else // Found the item, remove it.
-        {
-            // Maintain the BST property.
-            Node<T>* temp = node;
+        return min(node->leftchild);
+    }
 
-            /**
-             * If the node to be removed has only one child, then we can simply
-             * replace the node with its child.
-             */
-            if (node->leftchild == nullptr) // Only a right child.
-            {
-                node = node->rightchild; // Point to the right child.
-                delete temp;
-            }
-            else if (node->rightchild == nullptr) // Only a left child.
-            {
-                node = node->leftchild; // Point to the left child.
-                delete temp;
-            }
-            // If the node to be removed has two children, then we replace the
-            // node with the minimum value in the right subtree.
-            else
-            {
-                temp = min(node->rightchild); // Find the minimum value in the
-                                              // right subtree.
-
-                node->data = temp->data; // Replace the node's data with the
-                                         // minimum value.
-                node->rightchild =
-                    remove_min(node->rightchild); // Remove the minimum value
-                                                  // from the right subtree.
-
-                delete temp;
-            }
+    /**
+     * Removes the minimum value node from the tree.
+     *
+     * @param node The root node of the tree.
+     * @return The new root after removal.
+     */
+    template <typename T>
+    Node<T>* remove_min(Node<T>* node)
+    {
+        if (node == nullptr)
+        {
+            return nullptr;
         }
 
+        if (node->leftchild == nullptr)
+        {
+            Node<T>* right = node->rightchild;
+            delete node;
+            return rig
+            ht;
+        }
+        node->leftchild = remove_min(node->leftchild);
         return node;
     }
 
     /**
-     * @brief Recursively clears the tree starting from the given
-     * node.
+     * Inserts a new item into the tree.
      *
-     * @tparam T The type of elements stored in the tree.
-     * @param node The node node of the tree.
-     */
-    template <typename T>
-    void clear(Node<T>* node)
-    {
-        if (node == nullptr)
-        {
-            return;
-        }
-
-        clear(node->leftchild);
-        clear(node->rightchild);
-
-        delete node;
-    }
-
-    /**
-     * @brief Helper function to print the elements of the tree in
-     * in-order traversal.
-     *
-     * @param node The node node of the tree.
-     */
-    template <typename T>
-    void print(Node<T>* node, std::ostream& os)
-    {
-        if (node == nullptr)
-        {
-            return;
-        }
-
-        // In-order traversal.
-        print(node->leftchild, os);
-        os << node->data << ' ';
-        print(node->rightchild, os);
-    }
-
-    /**
-     * @brief Inserts a new node with the given item into the tree
-     * 
-     * @param node The root node of the subtree
-     * @param item The item to be inserted
-     * @return Node<T>* The root node of the modified subtree
+     * @param node The root node of the tree.
+     * @param item The item to be inserted.
+     * @return The new root after insertion.
      */
     template <typename T>
     Node<T>* insert(Node<T>* node, const T& item)
@@ -128,15 +66,148 @@ namespace helper
 
         if (item < node->data)
         {
-            // Insert to the left subtree if item is less than node
             node->leftchild = insert(node->leftchild, item);
         }
         else
         {
-            // Insert to the right subtree if item is greater than or equal
             node->rightchild = insert(node->rightchild, item);
         }
+
         return node;
     }
+
+    /**
+     * Removes an item from the tree.
+     *
+     * @param node The root node of the tree.
+     * @param item The item to be removed.
+     * @return The new root after removal.
+     */
+    template <typename T>
+    Node<T>* remove(Node<T>* node, const T& item)
+    {
+        if (node == nullptr)
+        {
+            return nullptr;
+        }
+
+        if (item < node->data)
+        {
+            node->leftchild = remove(node->leftchild, item);
+        }
+        else if (item > node->data)
+        {
+            node->rightchild = remove(node->rightchild, item);
+        }
+        else
+        {
+            if (node->leftchild == nullptr)
+            {
+                Node<T>* temp = node->rightchild;
+                delete node;
+                return temp;
+            }
+
+            if (node->rightchild == nullptr)
+            {
+                Node<T>* temp = node->leftchild;
+                delete node;
+                return temp;
+            }
+
+            Node<T>* temp    = min(node->rightchild);
+            node->data       = temp->data;
+            node->rightchild = remove_min(node->rightchild);
+        }
+
+        return node;
+    }
+
+    /**
+     * Finds an item in the tree.
+     *
+     * @param node The root node of the tree.
+     * @param item The item to find.
+     * @return The node containing the item, or nullptr if not found.
+     */
+    template <typename T>
+    Node<T>* find(Node<T>* node, const T& item)
+    {
+        if (node == nullptr)
+        {
+            return nullptr;
+        }
+
+        if (item < node->data)
+        {
+            return find(node->leftchild, item);
+        }
+
+        if (item > node->data)
+        {
+            return find(node->rightchild, item);
+        }
+
+        return node;
+    }
+
+    /**
+     * Prints the tree in-order.
+     *
+     * @param node The root node of the tree.
+     * @param os The output stream to print to.
+     */
+    template <typename T>
+    void print(Node<T>* node, std::ostream& os)
+    {
+        if (node == nullptr)
+        {
+            return;
+        }
+
+        print(node->leftchild, os);
+        os << node->data << ' ';
+        print(node->rightchild, os);
+    }
+
+    /**
+     * Clears all nodes in the tree.
+     *
+     * @param node The root node of the tree.
+     */
+    template <typename T>
+    void clear(Node<T>* node)
+    {
+        if (node == nullptr)
+        {
+            return;
+        }
+
+        clear(node->leftchild);
+        clear(node->rightchild);
+        delete node;
+    }
+
+    /**
+     * Creates a deep copy of the tree.
+     *
+     * @param node The root node of the tree to copy.
+     * @return The root node of the new copy.
+     */
+    template <typename T>
+    Node<T>* deep_copy(Node<T>* node)
+    {
+        if (node == nullptr)
+        {
+            return nullptr;
+        }
+
+        Node<T>* new_node    = new Node<T>{node->data};
+        new_node->leftchild  = deep_copy(node->leftchild);
+        new_node->rightchild = deep_copy(node->rightchild);
+        
+        return new_node;
+    }
+
 } // namespace helper
-#endif // !HELPER_HPP
+#endif // HELPER_HPP
