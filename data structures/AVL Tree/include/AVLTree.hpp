@@ -46,6 +46,17 @@ private:
 
     auto deep_copy(Node<T>* node) -> Node<T>*;
 
+    /**
+     * @brief Verifies if the AVL tree maintains its balance property.
+     * 
+     * This function recursively checks if each node in the tree satisfies the AVL balance property,
+     * which requires that the difference in height between left and right subtrees of any node
+     * must not exceed 1.
+     * 
+     * @param node The root node of the subtree to verify.
+     * @return true if the subtree rooted at node maintains AVL balance property,
+     *         false otherwise.
+     */
     bool verify_balance(Node<T>* node) const;
     int  count_nodes(Node<T>* node) const;
     bool verify_count() const;
@@ -215,6 +226,7 @@ public:
         return result;
     }
 
+    // Traversal orders.
     enum class TraversalOrder
     {
         PreOrder,
@@ -671,7 +683,7 @@ int AVLTree<T>::count_nodes(Node<T>* node) const
     {
         return 0;
     }
-    
+
     return 1 + count_nodes(node->leftchild) + count_nodes(node->rightchild);
 }
 
