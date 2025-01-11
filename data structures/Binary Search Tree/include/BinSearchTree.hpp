@@ -4,8 +4,8 @@
 #include "Helper.hpp"
 #include "Node.hpp"
 
-#include <iostream> // std::cout
-#include <utility>  // std::move
+#include <iostream>
+#include <utility>
 
 /**
  * Pre-order: ROOT, left, right
@@ -17,11 +17,8 @@ template <typename T>
 class BinSearchTree
 {
 private:
-    Node<T>* m_root{nullptr}; // The node of the BST.
-    int      m_count{};       // Number of the nodes in the BST.
-
-    // Helper function.
-    auto deep_copy(Node<T>* node) -> Node<T>*;
+    Node<T>* m_root{nullptr}; // The root node of the BST
+    int      m_count{};       // Number of nodes in the BST
 
 public:
     // Default constructor.
@@ -35,7 +32,7 @@ public:
 
     // Copy constructor.
     BinSearchTree(const BinSearchTree& other)
-        : m_root{deep_copy(other.m_root)}, m_count{other.m_count}
+        : m_root{helper::deep_copy(other.m_root)}, m_count{other.m_count}
     {
     }
 
@@ -47,9 +44,7 @@ public:
         {
             // Clear the current tree.
             helper::clear(m_root);
-
-            // Deep copy the other tree.
-            m_root  = deep_copy(other.m_root);
+            m_root  = helper::deep_copy(other.m_root);
             m_count = other.m_count;
         }
 
@@ -69,7 +64,7 @@ public:
         // Check for self-assignment.
         if (this != &other)
         {
-            // Member-wise move.
+            helper::clear(m_root);
             m_root  = std::exchange(other.m_root, nullptr);
             m_count = std::exchange(other.m_count, 0);
         }
@@ -109,48 +104,20 @@ public:
      */
     void remove(const T& item)
     {
-        const Node<T>* target_node = find(m_root, item);
-
-        if (target_node != nullptr)
+        if (helper::find(m_root, item))
         {
             m_root = helper::remove(m_root, item);
             m_count--;
         }
     }
 
-    /**
-     * @brief Finds a node containing the specified item
-     * 
-     * @param item The value to search for
-     * @return Node<T>* Pointer to the node containing the item, or nullptr if not found
-     */
-    Node<T>* find(const T& item) const
+    auto find(const T& item) const -> const T*
     {
-        Node<T>* current = m_root;
-        while (current != nullptr)
-        {
-            if (item < current->data)
-            {
-                current = current->leftchild;
-            }
-            else if (item > current->data)
-            {
-                current = current->rightchild;
-            }
-            else
-            {
-                return current;
-            }
-        }
-        return nullptr;
+        Node<T>* node = helper::find(m_root, item);
+        return node ? &node->data : nullptr;
     }
 
-    /**
-     * Returns the number of elements in the tree.
-     *
-     * @return The number of elements in the tree.
-     */
-    int size() const
+    auto size() const -> int
     {
         return m_count;
     }
@@ -165,56 +132,9 @@ public:
      */
     void print(std::ostream& os = std::cout) const
     {
-        if (m_root == nullptr)
-        {
-            return;
-        }
-        else
-        {
-            helper::print(m_root, os);
-        }
-    }
-
-    /**
-     * Finds the minimum value in a binary search tree starting from the given node
-     * node.
-     *
-     * @param node The node node of the tree.
-     * @return The node containing the minimum value.
-     */
-    template <typename T>
-    Node<T>* min(Node<T>* node)
-    {
-        if (node->leftchild == nullptr)
-        {
-            return node;
-        }
-        else
-        {
-            return min(node->leftchild);
-        }
+        helper::print(m_root, os);
+        os << '\n';
     }
 };
 
-/**
- * @brief Deep copies the tree starting from the given node.
- *
- * @param node The node node of the tree.
- * @return A pointer to the root node of the copied binary search tree.
- */
-template <typename T>
-Node<T>* BinSearchTree<T>::deep_copy(Node<T>* node)
-{
-    if (node == nullptr)
-    {
-        return nullptr;
-    }
-
-    Node<T>* new_node = new Node<T>{node->data};
-
-    new_node->leftchild  = deep_copy(node->leftchild);
-    new_node->rightchild = deep_copy(node->rightchild);
-
-    return new_node;
-}
 #endif // BINSEARCHTREE_HPP
