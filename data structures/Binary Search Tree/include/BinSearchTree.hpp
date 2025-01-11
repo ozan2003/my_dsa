@@ -111,13 +111,13 @@ public:
         }
     }
 
-    auto find(const T& item) const -> const T*
+    const T* find(const T& item) const
     {
         Node<T>* node = helper::find(m_root, item);
         return node ? &node->data : nullptr;
     }
 
-    auto size() const -> int
+    int size() const
     {
         return m_count;
     }
