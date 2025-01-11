@@ -15,8 +15,7 @@ struct Node
     {
     }
 
-    // Fixed isleaf() implementation
-    bool isleaf() const
+    bool is_leaf() const
     {
         return leftchild == nullptr && rightchild == nullptr;
     }
