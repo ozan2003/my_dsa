@@ -124,6 +124,17 @@ public:
     }
 
     /**
+     * @brief Inserts a new item into the AVL tree.
+     *
+     * @param item The item to be inserted.
+     */
+    void insert(T&& item)
+    {
+        m_root = insert_helper(m_root, std::move(item));
+        m_count++;
+    }
+
+    /**
      * @brief Removes an item from the AVL tree.
      *
      * @tparam T The type of the items stored in the AVL tree.
@@ -152,7 +163,7 @@ public:
      */
     T& find(const T& item) const
     {
-        return find_helper(m_root, item);
+        return *find_helper(m_root, item);
     }
 
     /**
@@ -528,7 +539,7 @@ T* AVLTree<T>::find_helper(Node<T>* node, const T& item) const
         }
         else
         {
-            return node->data;
+            return &node->data;
         }
     }
 
