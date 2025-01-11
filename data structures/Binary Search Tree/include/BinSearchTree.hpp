@@ -36,18 +36,15 @@ public:
     {
     }
 
-    // Copy assignment operator. This is a deep copy.
+    // Copy assignment operator.
     BinSearchTree& operator=(const BinSearchTree& other)
     {
-        // Check for self-assignment.
         if (this != &other)
         {
-            // Clear the current tree.
             helper::clear(m_root);
             m_root  = helper::deep_copy(other.m_root);
             m_count = other.m_count;
         }
-
         return *this;
     }
 
@@ -61,7 +58,6 @@ public:
     // Move assignment operator.
     BinSearchTree& operator=(BinSearchTree&& other) noexcept
     {
-        // Check for self-assignment.
         if (this != &other)
         {
             helper::clear(m_root);
@@ -72,7 +68,7 @@ public:
     }
 
     /**
-     * @brief Clears the tree.
+     * Clears the tree.
      *
      * Remove all nodes from the tree and resets the node pointer
      * and count of nodes.
@@ -80,7 +76,6 @@ public:
     void clear()
     {
         helper::clear(m_root);
-
         m_root  = nullptr;
         m_count = 0;
     }
@@ -97,9 +92,8 @@ public:
     }
 
     /**
-     * @brief Removes an item from the tree.
+     * Removes an item from the tree.
      *
-     * @tparam T The type of the items stored in the tree.
      * @param item The item to be removed.
      */
     void remove(const T& item)
@@ -111,24 +105,35 @@ public:
         }
     }
 
+    /**
+     * Finds an item in the tree.
+     *
+     * @param item The item to find.
+     * @return Pointer to the item if found, nullptr otherwise.
+     */
     const T* find(const T& item) const
     {
         Node<T>* node = helper::find(m_root, item);
         return node ? &node->data : nullptr;
     }
 
+    /**
+     * Returns the number of nodes in the tree.
+     *
+     * @return The number of nodes.
+     */
     int size() const
     {
         return m_count;
     }
 
     /**
-     * @brief Prints the elements of the tree in ascending order.
+     * Prints the elements of the tree in ascending order.
      *
      * This function traverses the tree in an in-order manner and
      * prints the elements in ascending order.
      *
-     * @note If the tree is empty, nothing will be printed.
+     * @param os The output stream to print to.
      */
     void print(std::ostream& os = std::cout) const
     {
