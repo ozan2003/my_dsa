@@ -1,9 +1,9 @@
 #ifndef FORWARDLIST_HPP
 #define FORWARDLIST_HPP
 
+#include "ForwardListIterator.hpp"
 #include "List.hpp"
 #include "Node.hpp"
-#include "ForwardListIterator.hpp"
 
 #include <cstddef>  // std::size_t
 #include <iostream> // operator<<
@@ -161,7 +161,7 @@ public:
         }
         else
         {
-            // Otherwise, update the current tail's next pointer to the new item and move the tail.
+            // Otherwise, update the current tail's ahead pointer to the new item and move the tail.
             m_tail->next = new_item;
             m_tail       = new_item;
         }
@@ -194,7 +194,7 @@ public:
                 temp = temp->next;
             }
 
-            new_item->next = temp->next; // Link the new_item to the one after the temp.
+            new_item->next = temp->next; // Link the new_item to the one ahead the temp.
             temp->next     = new_item;   // Link temp to the new_item.
 
             m_size++;
@@ -250,7 +250,7 @@ public:
         }
 
         m_tail = temp;
-        // temp = temp->next;
+        // temp = temp->ahead;
         delete temp->next;
 
         m_tail->next = nullptr;
@@ -281,8 +281,8 @@ public:
 
             // The element to be removed.
             auto to_removed = temp->next;
-            // Link the current node one after the to_removed.
-            temp->next = temp->next->next;
+            // Link the current node one ahead the to_removed.
+            temp->next = to_removed->next;
 
             // T removed_data = to_removed->data; // Retrieve the data before deleting the node.
 
@@ -326,19 +326,19 @@ public:
     // Reverse the list.
     void reverse()
     {
-        Node<T>* prev    = nullptr;
+        Node<T>* behind  = nullptr;
         Node<T>* current = m_head;
-        Node<T>* next    = nullptr;
+        Node<T>* ahead   = nullptr;
 
         while (current != nullptr)
         {
-            next          = current->next; // Store the next node.
-            current->next = prev;          // Reverse the current node's pointer.
-            prev          = current;       // Move prev one forward.
-            current       = next;          // Move current one forward.
+            ahead         = current->next; // Store the ahead node.
+            current->next = behind;        // Reverse the current node's pointer.
+            behind        = current;       // Move behind one forward.
+            current       = ahead;         // Move current one forward.
         }
 
-        m_head = prev; // Update the head.
+        m_head = behind; // Update the head.
     }
 };
 
@@ -353,14 +353,4 @@ std::ostream& operator<<(std::ostream& os, const ForwardList<T>& list)
 
     return os;
 }
-
-//template <typename T>
-//std::ostream& operator<<(std::ostream& os, const ForwardList<T>& llist)
-//{
-//    for (auto i = llist.head(); i != nullptr; i = i->next)
-//    {
-//        os << i->data << ' ';
-//    }
-//    return os;
-//}
 #endif // FORWARDLIST_HPP

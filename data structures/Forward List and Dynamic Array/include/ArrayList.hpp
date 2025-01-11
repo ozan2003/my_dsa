@@ -5,20 +5,26 @@
 #include "ArrayListIterator.hpp"
 #include "List.hpp"
 
-#include <cassert>
 #include <iostream> // operator<<
 #include <utility>  // std::move, std::exchange
 
-constexpr std::size_t INITIAL_SIZE{2ull};
-constexpr std::size_t GROWTH_FACTOR{2ull};
+constexpr std::size_t INITIAL_SIZE{2};
+constexpr std::size_t GROWTH_FACTOR{2};
 
 template <typename T>
 class ArrayList : public List<T>
 {
+public:
+    using value_type      = typename List<T>::value_type;
+    using size_type       = typename List<T>::size_type;
+    using reference       = typename List<T>::reference;
+    using const_reference = typename List<T>::const_reference;
+    using pointer         = typename List<T>::pointer;
+
 private:
-    std::size_t m_capacity{};   // Maximum size of list.
-    std::size_t m_size{};       // Current number of list elements.
-    T*          m_list_array{}; // Array holding list of elements.
+    size_type m_capacity{};   // Maximum size of list.
+    size_type m_size{};       // Current number of list elements.
+    pointer   m_list_array{}; // Array holding list of elements.
 
     void reserve()
     {
@@ -29,9 +35,9 @@ private:
             m_capacity = INITIAL_SIZE;
         }
 
-        T* temp = new T[m_capacity]; // Allocate new array in the heap.
+        pointer temp = new value_type[m_capacity]; // Allocate new array in the heap.
 
-        for (std::size_t i{}; i < m_size; ++i)
+        for (size_type i{}; i < m_size; ++i)
         {
             temp[i] = std::move(m_list_array[i]); // Move all items of original array.
         }
@@ -43,20 +49,19 @@ private:
 public:
     ArrayList() = default;
 
-    ArrayList(const std::size_t size, const T& value = T{})
+    ArrayList(const size_type size, const_reference value = value_type{})
         : m_capacity{size * GROWTH_FACTOR},
           m_size{size},
-          m_list_array{new T[m_capacity]{value}} // ArrayList elements are initialized by value.
+          m_list_array{new value_type[m_capacity]{value}} // ArrayList elements are initialized by value.
     {
     }
 
-    ArrayList(const std::initializer_list<T> i_list)
+    ArrayList(const std::initializer_list<value_type> i_list)
         : ArrayList(i_list.size())
     // Don't use braces as initializer_list constructor uses it.
     // Otherwise this constructor would call itself.
     {
-        std::size_t count{};
-        for (const auto& item : i_list)
+        for (size_type count{}; const auto& item : i_list)
         {
             m_list_array[count] = std::move(item);
             count++;
@@ -72,9 +77,12 @@ public:
      * it almost certainly requires all three.
      */
     ArrayList(const ArrayList& other)
-        : List<T>{}, m_capacity{other.m_capacity}, m_size{other.m_size}, m_list_array{new T[other.m_capacity]{}}
+        : List<value_type>{},
+          m_capacity{other.m_capacity},
+          m_size{other.m_size},
+          m_list_array{new value_type[other.m_capacity]{}}
     {
-        for (std::size_t i{}; i < m_size; ++i)
+        for (size_type i{}; i < m_size; ++i)
         {
             m_list_array[i] = other.m_list_array[i];
         }
@@ -89,9 +97,9 @@ public:
 
             m_capacity   = other.m_capacity;
             m_size       = other.m_size;
-            m_list_array = new T[other.m_capacity];
+            m_list_array = new value_type[other.m_capacity];
 
-            for (std::size_t i{}; i < m_size; ++i)
+            for (size_type i{}; i < m_size; ++i)
             {
                 m_list_array[i] = other.m_list_array[i];
             }
@@ -110,7 +118,7 @@ public:
      * it almost certainly requires all five.
      */
     ArrayList(ArrayList&& other) noexcept
-        : List<T>{},
+        : List<value_type>{},
           // Member-wise move.
           // Replace the value of "other.m_capacity" with 0 and return the old value.
           m_capacity{std::exchange(other.m_capacity, 0)},
@@ -143,20 +151,20 @@ public:
     {
         delete[] m_list_array;
         m_list_array = nullptr;
-        m_capacity   = 0ull;
-        m_size       = 0ull;
+        m_capacity   = 0;
+        m_size       = 0;
     }
 
     // Insert "item" at given position.
-    void insert(const std::size_t pos, const T& item) override
+    void insert(const size_type pos, const_reference item) override
     {
         if (m_size == m_capacity)
         {
             reserve();
         }
-        assert(pos < m_size && "Out of range.\n");
+        //assert(pos < m_size && "Out of range.\n");
 
-        for (std::size_t s{m_size}; pos < s; --s) // Shift elements up...
+        for (size_type s{m_size}; pos < s; --s) // Shift elements up...
         {
             m_list_array[s] = m_list_array[s - 1]; // ...to make room.
         }
@@ -177,7 +185,7 @@ public:
     }
 
     // Append "item".
-    void append(const T& item) override
+    void append(const_reference item) override
     {
         if (m_size == m_capacity)
         {
@@ -190,14 +198,14 @@ public:
     }
 
     // Remove and return the current element.
-    void remove(const std::size_t pos) override
+    void remove(const size_type pos) override
     {
-        assert(pos < m_size && "No element.\n");
+        //assert(pos < m_size && "No element.\n");
 
         // T item = m_list_array[pos]; // Copy the item.
 
         // m_size - 1, because we're dealing with array indexes (array[size] is out of bounds).
-        for (std::size_t i{pos}; i < m_size - 1; ++i)
+        for (size_type i{pos}; i < m_size - 1; ++i)
         {
             m_list_array[i] = m_list_array[i + 1]; // Shift elements down.
         }
@@ -210,13 +218,13 @@ public:
         // │10  │20  │30  │40  │50  │60  │... │     // SHIFT ELEMENTS DOWN
         // └────┴────┴────┴────┴────┴────┴────┘
         //
-        m_size--; // Decrement size.
+        --m_size; // Decrement size.
 
         // return item;
     }
 
     // Return list size.
-    std::size_t size() const override
+    size_type size() const override
     {
         return m_size;
     }
@@ -226,30 +234,37 @@ public:
         return size() == 0;
     }
 
-    T& operator[](const std::size_t pos) override
+    reference operator[](const size_type pos) override
     {
-        assert(!empty() && "No current element.\n");
         return m_list_array[pos];
     }
 
-    const T& operator[](const std::size_t pos) const override
+    const_reference operator[](const size_type pos) const override
     {
-        assert(!empty() && "No current element.\n");
+        return m_list_array[pos];
+    }
+
+    reference at(const size_type pos) override
+    {
+        if (pos >= m_size)
+        {
+            throw std::out_of_range{"Index out of range."};
+        }
         return m_list_array[pos];
     }
 
     // Return iterator at beginning of list.
-    ArrayListIterator<T> begin() const
+    ArrayListIterator<value_type> begin() const
     {
         // m_list_array points to the first element.
-        return ArrayListIterator<T>{m_list_array};
+        return ArrayListIterator<value_type>{m_list_array};
     }
 
     // Return iterator past end of list.
-    ArrayListIterator<T> end() const
+    ArrayListIterator<value_type> end() const
     {
         // m_list_array + m_size points to the element past the last one.
-        return ArrayListIterator<T>{m_list_array + m_size};
+        return ArrayListIterator<value_type>{m_list_array + m_size};
     }
 };
 

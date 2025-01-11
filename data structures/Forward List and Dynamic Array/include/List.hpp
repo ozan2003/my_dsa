@@ -3,13 +3,19 @@
 #ifndef LIST_HPP
 #define LIST_HPP
 
+#include <cstddef> // std::size_t
 #include <initializer_list>
-#include <cstddef>  // std::size_t
 
 template <typename T>
 class List
 {
 public:
+    using value_type      = T;
+    using size_type       = std::size_t;
+    using reference       = value_type&;
+    using const_reference = const value_type&;
+    using pointer         = value_type*;
+
     List()
     {
     }
@@ -23,7 +29,7 @@ public:
     }
 
     virtual void insert(const std::size_t pos, const T& item) = 0;
-    virtual void append(const T& item)                     = 0;
+    virtual void append(const T& item)                        = 0;
 
     virtual void remove(const std::size_t pos) = 0;
 

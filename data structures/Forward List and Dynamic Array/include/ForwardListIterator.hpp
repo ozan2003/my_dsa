@@ -25,7 +25,8 @@ public:
     ForwardListIterator() = default;
 
     // Constructor with pointer.
-    ForwardListIterator(pointer ptr)
+    // Explicit to avoid implicit conversion from Node* to ForwardListIterator.
+    explicit ForwardListIterator(pointer ptr)
         : m_ptr{ptr}
     {
     }

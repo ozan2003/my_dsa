@@ -14,8 +14,8 @@ public:
     using iterator_category = std::random_access_iterator_tag;
     using difference_type   = std::ptrdiff_t;
     using value_type        = T;
-    using pointer           = T*;
-    using reference         = T&;
+    using pointer           = value_type*;
+    using reference         = value_type&;
 
     // Default constructor.
     ArrayListIterator() = default;
