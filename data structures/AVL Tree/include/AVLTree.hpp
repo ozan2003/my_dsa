@@ -47,7 +47,7 @@ private:
     auto deep_copy(Node<T>* node) -> Node<T>*;
 
     bool verify_balance(Node<T>* node) const;
-    int count_nodes(Node<T>* node) const;
+    int  count_nodes(Node<T>* node) const;
     bool verify_count() const;
 
 public:
@@ -83,7 +83,8 @@ public:
 
     // Move constructor.
     AVLTree(AVLTree&& other) noexcept
-        : m_root{std::exchange(other.m_root, nullptr)}, m_count{std::exchange(other.m_count, 0)}
+        : m_root{std::exchange(other.m_root, nullptr)},
+          m_count{std::exchange(other.m_count, 0)}
     {
     }
 
@@ -95,8 +96,10 @@ public:
             clear_helper(m_root); // Clear the current tree.
 
             // Member-wise move.
-            m_root  = std::exchange(other.m_root, nullptr); // Exchange the node nodes.
-            m_count = std::exchange(other.m_count, 0);      // Exchange the number of elements.
+            m_root  = std::exchange(other.m_root,
+                                   nullptr); // Exchange the node nodes.
+            m_count = std::exchange(other.m_count,
+                                    0); // Exchange the number of elements.
         }
 
         return *this;
@@ -105,8 +108,8 @@ public:
     /**
      * @brief Clears the AVL tree, removing all nodes.
      *
-     * This function removes all nodes from the AVL tree, effectively clearing it.
-     * After calling this function, the tree will be empty.
+     * This function removes all nodes from the AVL tree, effectively clearing
+     * it. After calling this function, the tree will be empty.
      */
     void clear()
     {
@@ -152,9 +155,9 @@ public:
         {
             throw std::runtime_error("Item not found in tree");
         }
-        
+
         T value = *temp;
-        m_root = remove_helper(m_root, item);
+        m_root  = remove_helper(m_root, item);
         m_count--;
         return value;
     }
@@ -184,7 +187,8 @@ public:
     /**
      * Prints the elements of the AVL tree in ascending order.
      *
-     * @param os The output stream to print the elements to. Default is std::cout.
+     * @param os The output stream to print the elements to. Default is
+     * std::cout.
      */
     void print(std::ostream& os = std::cout) const
     {
@@ -211,19 +215,30 @@ public:
         return result;
     }
 
-    enum class TraversalOrder { PreOrder, InOrder, PostOrder };
-
-    void print(std::ostream& os = std::cout, TraversalOrder order = TraversalOrder::InOrder) const
+    enum class TraversalOrder
     {
-        if (m_root == nullptr) return;
+        PreOrder,
+        InOrder,
+        PostOrder
+    };
+
+    void print(std::ostream&  os    = std::cout,
+               TraversalOrder order = TraversalOrder::InOrder) const
+    {
+        if (m_root == nullptr)
+            return;
         print_helper(m_root, os, order);
     }
 
-    void print_helper(Node<T>* node, std::ostream& out, TraversalOrder order) const
+    void print_helper(Node<T>*       node,
+                      std::ostream&  out,
+                      TraversalOrder order) const
     {
-        if (node == nullptr) return;
+        if (node == nullptr)
+            return;
 
-        switch(order) {
+        switch (order)
+        {
             case TraversalOrder::PreOrder:
                 out << node->data << ' ';
                 print_helper(node->leftchild, out, order);
@@ -243,24 +258,28 @@ public:
     }
 
     // Get the height of the tree
-    int get_height() const { 
-        return height(m_root) + 1; 
+    int get_height() const
+    {
+        return height(m_root) + 1;
     }
 
     // Verify AVL property
-    bool is_balanced() const {
+    bool is_balanced() const
+    {
         return verify_balance(m_root);
     }
 
     // Get node count in subtree
-    int count_nodes(Node<T>* node) const {
-        if (node == nullptr) return 0;
-        return 1 + count_nodes(node->leftchild) + 
-                   count_nodes(node->rightchild);
+    int count_nodes(Node<T>* node) const
+    {
+        if (node == nullptr)
+            return 0;
+        return 1 + count_nodes(node->leftchild) + count_nodes(node->rightchild);
     }
 
     // Verify size consistency
-    bool verify_count() const {
+    bool verify_count() const
+    {
         return m_count == count_nodes(m_root);
     }
 };
@@ -337,15 +356,16 @@ int AVLTree<T>::balance_factor(Node<T>* node)
 template <typename T>
 Node<T>* AVLTree<T>::rotate_right(Node<T>* y)
 {
-    Node<T>* new_root = y->leftchild;         // y's left child will be the new node.
-    Node<T>* T2       = new_root->rightchild; // T2 is the right subtree of new_root.
+    Node<T>* new_root = y->leftchild;   // y's left child will be the new node.
+    Node<T>* T2 = new_root->rightchild; // T2 is the right subtree of new_root.
 
     new_root->rightchild = y;  // Make y the right child of new_root.
     y->leftchild         = T2; // Make T2 the left child of y.
 
     // Apply the node height formula.
-    y->height        = std::max(height(y->leftchild), height(y->rightchild)) + 1;
-    new_root->height = std::max(height(new_root->leftchild), height(new_root->rightchild)) + 1;
+    y->height = std::max(height(y->leftchild), height(y->rightchild)) + 1;
+    new_root->height =
+        std::max(height(new_root->leftchild), height(new_root->rightchild)) + 1;
 
     return new_root; // Return the new node.
 }
@@ -359,21 +379,23 @@ Node<T>* AVLTree<T>::rotate_right(Node<T>* y)
 template <typename T>
 Node<T>* AVLTree<T>::rotate_left(Node<T>* x)
 {
-    Node<T>* new_root = x->rightchild;       // x's right child will be the new node.
-    Node<T>* T2       = new_root->leftchild; // T2 is the left subtree of new_root.
+    Node<T>* new_root = x->rightchild; // x's right child will be the new node.
+    Node<T>* T2 = new_root->leftchild; // T2 is the left subtree of new_root.
 
     new_root->leftchild = x;  // Make x the left child of new_root.
     x->rightchild       = T2; // Make T2 the right child of x.
 
     // Apply the node height formula.
-    x->height        = std::max(height(x->leftchild), height(x->rightchild)) + 1;
-    new_root->height = std::max(height(new_root->leftchild), height(new_root->rightchild)) + 1;
+    x->height = std::max(height(x->leftchild), height(x->rightchild)) + 1;
+    new_root->height =
+        std::max(height(new_root->leftchild), height(new_root->rightchild)) + 1;
 
     return new_root; // Return the new node.
 }
 
 /**
- * Balances the AVL tree by performing necessary rotations on the given node node.
+ * Balances the AVL tree by performing necessary rotations on the given node
+ * node.
  *
  * @param node The node node of the AVL tree to be balanced.
  * @return The new node node after balancing.
@@ -389,7 +411,8 @@ Node<T>* AVLTree<T>::balance(Node<T>* node)
 
     // Apply the node height formula.
     // Update the height of the node node.
-    node->height = std::max(height(node->leftchild), height(node->rightchild)) + 1;
+    node->height =
+        std::max(height(node->leftchild), height(node->rightchild)) + 1;
 
     // int balance = balance_factor(node);
 
@@ -497,9 +520,12 @@ Node<T>* AVLTree<T>::remove_helper(Node<T>* node, const T& item)
         }
 
         // If the node has two children.
-        Node<T>* temp    = min(node->rightchild); // Find the inorder successor.
-        node->data       = temp->data;            // Copy the inorder successor's data to the node.
-        node->rightchild = remove_helper(node->rightchild, temp->data); // Delete the inorder successor.
+        Node<T>* temp = min(node->rightchild); // Find the inorder successor.
+        node->data =
+            temp->data; // Copy the inorder successor's data to the node.
+        node->rightchild =
+            remove_helper(node->rightchild,
+                          temp->data); // Delete the inorder successor.
     }
 
     // Second step is the fixing the AVL Tree's property from changed node.
@@ -573,11 +599,13 @@ void AVLTree<T>::clear_helper(Node<T>* node)
 /**
  * @brief Helper function to find an item in the AVL tree.
  *
- * This function recursively searches for the specified item in the AVL tree starting from the given node node.
+ * This function recursively searches for the specified item in the AVL tree
+ * starting from the given node node.
  *
  * @param node The node node of the AVL tree.
  * @param item The item to be found.
- * @return A reference to the found item if it exists, otherwise a reference to a default-constructed item.
+ * @return A reference to the found item if it exists, otherwise a reference to
+ * a default-constructed item.
  */
 template <typename T>
 T* AVLTree<T>::find_helper(Node<T>* node, const T& item) const
@@ -609,11 +637,12 @@ T* AVLTree<T>::find_helper(Node<T>* node, const T& item) const
 template <typename T>
 Node<T>* AVLTree<T>::deep_copy(Node<T>* node)
 {
-    if (node == nullptr) return nullptr;
+    if (node == nullptr)
+        return nullptr;
 
-    Node<T>* new_node = new Node<T>{node->data};
-    new_node->height = node->height;  // Copy height
-    new_node->leftchild = deep_copy(node->leftchild);
+    Node<T>* new_node    = new Node<T>{node->data};
+    new_node->height     = node->height; // Copy height
+    new_node->leftchild  = deep_copy(node->leftchild);
     new_node->rightchild = deep_copy(node->rightchild);
 
     return new_node;
@@ -622,21 +651,28 @@ Node<T>* AVLTree<T>::deep_copy(Node<T>* node)
 template <typename T>
 bool AVLTree<T>::verify_balance(Node<T>* node) const
 {
-    if (node == nullptr) return true;
-    
-    int bf = balance_factor(node);
-    if (bf > 1 || bf < -1) return false;
-    
-    return verify_balance(node->leftchild) && 
-           verify_balance(node->rightchild);
+    if (node == nullptr)
+    {
+        return true;
+    }
+
+    if (int bf = balance_factor(node); bf > 1 || bf < -1)
+    {
+        return false;
+    }
+
+    return verify_balance(node->leftchild) && verify_balance(node->rightchild);
 }
 
 template <typename T>
 int AVLTree<T>::count_nodes(Node<T>* node) const
 {
-    if (node == nullptr) return 0;
-    return 1 + count_nodes(node->leftchild) + 
-               count_nodes(node->rightchild);
+    if (node == nullptr)
+    {
+        return 0;
+    }
+    
+    return 1 + count_nodes(node->leftchild) + count_nodes(node->rightchild);
 }
 
 template <typename T>
