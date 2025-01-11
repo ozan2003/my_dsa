@@ -144,14 +144,15 @@ public:
     T remove(const T& item)
     {
         T* temp = find_helper(m_root, item);
-
-        if (temp != 0)
+        if (temp == nullptr)
         {
-            m_root = remove_helper(m_root, item);
-            m_count--;
+            throw std::runtime_error("Item not found in tree");
         }
-
-        return *temp;
+        
+        T value = *temp;
+        m_root = remove_helper(m_root, item);
+        m_count--;
+        return value;
     }
 
     /**
