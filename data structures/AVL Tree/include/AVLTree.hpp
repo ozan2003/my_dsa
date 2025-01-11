@@ -46,6 +46,10 @@ private:
 
     auto deep_copy(Node<T>* node) -> Node<T>*;
 
+    bool verify_balance(Node<T>* node) const;
+    int count_nodes(Node<T>* node) const;
+    bool verify_count() const;
+
 public:
     // Constructors.
     AVLTree() = default;
@@ -205,6 +209,59 @@ public:
 
         sum_helper(m_root, result);
         return result;
+    }
+
+    enum class TraversalOrder { PreOrder, InOrder, PostOrder };
+
+    void print(std::ostream& os = std::cout, TraversalOrder order = TraversalOrder::InOrder) const
+    {
+        if (m_root == nullptr) return;
+        print_helper(m_root, os, order);
+    }
+
+    void print_helper(Node<T>* node, std::ostream& out, TraversalOrder order) const
+    {
+        if (node == nullptr) return;
+
+        switch(order) {
+            case TraversalOrder::PreOrder:
+                out << node->data << ' ';
+                print_helper(node->leftchild, out, order);
+                print_helper(node->rightchild, out, order);
+                break;
+            case TraversalOrder::InOrder:
+                print_helper(node->leftchild, out, order);
+                out << node->data << ' ';
+                print_helper(node->rightchild, out, order);
+                break;
+            case TraversalOrder::PostOrder:
+                print_helper(node->leftchild, out, order);
+                print_helper(node->rightchild, out, order);
+                out << node->data << ' ';
+                break;
+        }
+    }
+
+    // Get the height of the tree
+    int get_height() const { 
+        return height(m_root) + 1; 
+    }
+
+    // Verify AVL property
+    bool is_balanced() const {
+        return verify_balance(m_root);
+    }
+
+    // Get node count in subtree
+    int count_nodes(Node<T>* node) const {
+        if (node == nullptr) return 0;
+        return 1 + count_nodes(node->leftchild) + 
+                   count_nodes(node->rightchild);
+    }
+
+    // Verify size consistency
+    bool verify_count() const {
+        return m_count == count_nodes(m_root);
     }
 };
 
@@ -540,8 +597,7 @@ T* AVLTree<T>::find_helper(Node<T>* node, const T& item) const
             return &node->data;
         }
     }
-
-    return nullptr; // Not found.
+    throw std::runtime_error("Item not found in tree");
 }
 
 /**
@@ -553,17 +609,40 @@ T* AVLTree<T>::find_helper(Node<T>* node, const T& item) const
 template <typename T>
 Node<T>* AVLTree<T>::deep_copy(Node<T>* node)
 {
-    if (node == nullptr)
-    {
-        return nullptr;
-    }
+    if (node == nullptr) return nullptr;
 
     Node<T>* new_node = new Node<T>{node->data};
-
-    new_node->leftchild  = deep_copy(node->leftchild);
+    new_node->height = node->height;  // Copy height
+    new_node->leftchild = deep_copy(node->leftchild);
     new_node->rightchild = deep_copy(node->rightchild);
 
     return new_node;
+}
+
+template <typename T>
+bool AVLTree<T>::verify_balance(Node<T>* node) const
+{
+    if (node == nullptr) return true;
+    
+    int bf = balance_factor(node);
+    if (bf > 1 || bf < -1) return false;
+    
+    return verify_balance(node->leftchild) && 
+           verify_balance(node->rightchild);
+}
+
+template <typename T>
+int AVLTree<T>::count_nodes(Node<T>* node) const
+{
+    if (node == nullptr) return 0;
+    return 1 + count_nodes(node->leftchild) + 
+               count_nodes(node->rightchild);
+}
+
+template <typename T>
+bool AVLTree<T>::verify_count() const
+{
+    return m_count == count_nodes(m_root);
 }
 
 #endif // AVLTREE_HPP
