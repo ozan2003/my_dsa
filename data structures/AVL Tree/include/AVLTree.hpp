@@ -40,7 +40,7 @@ private:
     auto print_helper(Node<T>* node, std::ostream& out) const -> void;
     auto clear_helper(Node<T>* node) -> void;
     auto find_helper(Node<T>* node, const T& item) const -> T*;
-    auto sum_helper(Node<T>* node, int& accumulator) const -> void;
+    auto sum_helper(Node<T>* node, T& accumulator) const -> void;
 
     auto min(Node<T>* node) -> Node<T>*;
 
@@ -214,18 +214,15 @@ public:
  * @param accumulator The variable to store the sum of elements.
  */
 template <typename T>
-void AVLTree<T>::sum_helper(Node<T>* node, int& accumulator) const
+void AVLTree<T>::sum_helper(Node<T>* node, T& accumulator) const
 {
-    // Base case.
     if (node == nullptr)
     {
         return;
     }
-
-    accumulator += node->data; // Add the current node's data to the accumulator.
-
-    sum_helper(node->leftchild, accumulator);  // Call left sub-tree.
-    sum_helper(node->rightchild, accumulator); // Call right sub-tree.
+    accumulator += node->data;
+    sum_helper(node->leftchild, accumulator);
+    sum_helper(node->rightchild, accumulator);
 }
 
 /**
