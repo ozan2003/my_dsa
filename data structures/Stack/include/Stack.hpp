@@ -184,5 +184,21 @@ public:
             m_data = std::move(new_data);
         }
     }
+
+    void reserve(size_type new_capacity)
+    {
+        if (new_capacity > m_size)
+        {
+            auto new_data = std::make_unique<value_type[]>(new_capacity);
+            
+            for (size_type i{}; i < m_top; ++i)
+            {
+                new_data[i] = std::move(m_data[i]);
+            }
+            
+            m_size = new_capacity;
+            m_data = std::move(new_data);
+        }
+    }
 };
 #endif // STACK_HPP
