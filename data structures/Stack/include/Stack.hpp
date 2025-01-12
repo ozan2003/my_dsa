@@ -76,15 +76,15 @@ public:
         if (this != &other)
         {
             m_size = other.m_size;
-            m_top = other.m_top; // Copy the top.
+            m_top  = other.m_top; // Copy the top.
             // Use make_unique rather than new[].
             auto new_data = std::make_unique<value_type[]>(m_size);
-            
+
             for (size_type i{}; i < m_size; ++i)
             {
                 new_data[i] = other.m_data[i];
             }
-            
+
             m_data = std::move(new_data);
         }
         return *this;
@@ -103,7 +103,7 @@ public:
         if (this != &other)
         {
             m_size = std::exchange(other.m_size, 0);
-            m_top = std::exchange(other.m_top, 0);
+            m_top  = std::exchange(other.m_top, 0);
             m_data = std::exchange(other.m_data, nullptr);
         }
         return *this;
@@ -141,18 +141,21 @@ public:
     }
 
     // Check if the stack is empty.
+    [[nodiscard]]
     bool empty() const noexcept
     {
         return m_top == 0;
     }
 
     // Return the size of the stack.
+    [[nodiscard]]
     size_type size() const noexcept
     {
         return m_top;
     }
 
     // Return the item at the top of the stack.
+    [[nodiscard]]
     reference top() const
     {
         if (empty()) // If the stack is empty.
@@ -163,6 +166,7 @@ public:
     }
 
     // Add a capacity() method to distinguish from size()
+    [[nodiscard]]
     size_type capacity() const noexcept
     {
         return m_size;
@@ -174,12 +178,12 @@ public:
         {
             auto new_size = (m_top == 0) ? DEFAULT_SIZE : m_top;
             auto new_data = std::make_unique<value_type[]>(new_size);
-            
+
             for (size_type i{}; i < m_top; ++i)
             {
                 new_data[i] = std::move(m_data[i]);
             }
-            
+
             m_size = new_size;
             m_data = std::move(new_data);
         }
@@ -190,12 +194,12 @@ public:
         if (new_capacity > m_size)
         {
             auto new_data = std::make_unique<value_type[]>(new_capacity);
-            
+
             for (size_type i{}; i < m_top; ++i)
             {
                 new_data[i] = std::move(m_data[i]);
             }
-            
+
             m_size = new_capacity;
             m_data = std::move(new_data);
         }
