@@ -73,21 +73,21 @@ public:
     // Copy assignment operator.
     Stack& operator=(const Stack<value_type>& other)
     {
-        if (this != &other) // Check for self-assignment.
+        if (this != &other)
         {
-            m_data.reset(); // Delete the old stack.
-
-            m_size = other.m_size;           // Copy the size.
-            m_data = new value_type[m_size]; // Create a new stack with the
-                                             // given size.
-
-            // Copy the items from the other stack to this stack.
+            m_size = other.m_size;
+            m_top = other.m_top; // Copy the top.
+            // Use make_unique rather than new[].
+            auto new_data = std::make_unique<value_type[]>(m_size);
+            
             for (size_type i{}; i < m_size; ++i)
             {
-                m_data[i] = other.m_data[i];
+                new_data[i] = other.m_data[i];
             }
+            
+            m_data = std::move(new_data);
         }
-        return *this; // Return this stack.
+        return *this;
     }
 
     // Move constructor.
@@ -100,15 +100,13 @@ public:
     // Move assignment operator.
     Stack& operator=(Stack<value_type>&& other) noexcept
     {
-        if (this != &other) // Check for self-assignment.
+        if (this != &other)
         {
-            delete[] m_data; // Delete the old stack.
-
-            // Member-wise move.
             m_size = std::exchange(other.m_size, 0);
-            m_data = std::exchange(other.m_data, {});
+            m_top = std::exchange(other.m_top, 0);
+            m_data = std::exchange(other.m_data, nullptr);
         }
-        return *this; // Return this stack.
+        return *this;
     }
 
     // Add item to the top of the stack.
@@ -151,7 +149,7 @@ public:
     // Return the size of the stack.
     size_type size() const noexcept
     {
-        return m_size;
+        return m_top;
     }
 
     // Return the item at the top of the stack.
@@ -162,6 +160,12 @@ public:
             throw std::out_of_range("Stack is empty!");
         }
         return m_data[m_top - 1];
+    }
+
+    // Add a capacity() method to distinguish from size()
+    size_type capacity() const noexcept
+    {
+        return m_size;
     }
 };
 #endif // STACK_HPP
