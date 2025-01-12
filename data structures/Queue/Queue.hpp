@@ -2,36 +2,48 @@
 #define QUEUE_HPP
 
 #include <algorithm>        // std::copy
+#include <cstdint>          // std::int64_t
 #include <initializer_list> // std::initializer_list
 #include <stdexcept>        // std::runtime_error
+#include <utility>          // std::swap
 
 template <typename T>
 class Queue
 {
+public:
+    using value_type = T;
+    using size_type  = std::int64_t; // We're using -1 to represent the rear of
+                                     // the queue. So we need a signed type.
+    using difference_type = std::ptrdiff_t;
+    using reference       = value_type&;
+    using const_reference = const value_type&;
+    using pointer         = value_type*;
+    using const_pointer   = const value_type*;
+
 private:
-    int m_max_size{};
-    int m_front{0};
-    int m_rear{-1};
-    T*  m_list_array{};
+    size_type m_max_size{};
+    size_type m_front{0};
+    size_type m_rear{-1};
+    pointer   m_list_array{};
 
 public:
     Queue() = default;
 
-    Queue(const int size)
+    Queue(const size_type size)
         : m_max_size{size + 1}
     {
         if (size < 0)
         {
             throw std::invalid_argument("Queue size must be non-negative");
         }
-        m_list_array = new T[m_max_size];
+        m_list_array = new value_type[m_max_size];
     }
 
     Queue(const Queue& other)
         : m_max_size{other.m_max_size},
           m_front{other.m_front},
           m_rear{other.m_rear},
-          m_list_array{new T[other.m_max_size]}
+          m_list_array{new value_type[other.m_max_size]}
     {
         std::copy(other.m_list_array,
                   other.m_list_array + m_max_size,
@@ -96,12 +108,12 @@ public:
         delete[] m_list_array;
     }
 
-    int length() const noexcept
+    size_type length() const noexcept
     {
         return ((m_rear + m_max_size) - m_front + 1) % m_max_size;
     }
 
-    const T& peek_front() const
+    const_reference peek_front() const
     {
         if (length() == 0)
         {
@@ -111,7 +123,7 @@ public:
         return m_list_array[m_front];
     }
 
-    void enqueue(const T& item)
+    void enqueue(const_reference item)
     {
         if ((m_rear + 2) % m_max_size == m_front)
         {
@@ -122,20 +134,20 @@ public:
         m_list_array[m_rear] = item;
     }
 
-    T dequeue()
+    value_type dequeue()
     {
         if (length() == 0)
         {
             throw std::runtime_error("Queue is empty.");
         }
 
-        T temp = peek_front();
+        value_type temp = peek_front();
 
         m_front = (m_front + 1) % m_max_size;
         return temp;
     }
 
-    int capacity() const noexcept
+    size_type capacity() const noexcept
     {
         return m_max_size - 1;
     }
