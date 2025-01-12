@@ -23,12 +23,19 @@ public:
     using const_pointer   = const value_type*;
 
 private:
+    // We add 1 to max_size to keep one slot empty - this helps distinguish
+    // between full and empty states in a circular queue.
     size_type m_max_size{DEFAULT_QUEUE_SIZE};
 
+    // Front pointer - points to the first element that would be dequeued
+    // Moves forward when dequeuing.
     size_type m_front{0};
 
+    // Rear pointer - points to the last element that was enqueued
+    // -1 indicates an empty queue. Moves forward when enqueuing.
     size_type m_rear{-1};
 
+    // The actual array storing our elements.
     pointer m_list_array{};
 
 public:
