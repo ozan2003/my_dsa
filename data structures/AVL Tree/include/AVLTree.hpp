@@ -42,8 +42,6 @@ private:
     auto find_helper(Node<T>* node, const T& item) const -> T*;
     auto sum_helper(Node<T>* node, T& accumulator) const -> void;
 
-    auto min(Node<T>* node) -> Node<T>*;
-
     auto deep_copy(Node<T>* node) -> Node<T>*;
 
     /**
@@ -300,6 +298,52 @@ public:
     {
         return m_count == count_nodes(m_root);
     }
+
+    /**
+     * Finds the minimum value node in the AVL tree.
+     *
+     * @param node The node node of the AVL tree.
+     * @return The minimum value node in the AVL tree.
+     */
+    Node<T>* min()
+    {
+        if (m_root == nullptr)
+        {
+            return nullptr;
+        }
+
+        Node<T>* current = m_root;
+
+        // Find the leftmost node since this is based on BST.
+        while (current->leftchild != nullptr)
+        {
+            current = current->leftchild;
+        }
+        return current;
+    }
+
+    /**
+     * Finds the maximum value node in the AVL tree.
+     *
+     * @param node The node node of the AVL tree.
+     * @return The maximum value node in the AVL tree.
+     */
+    Node<T>* max()
+    {
+        if (m_root == nullptr)
+        {
+            return nullptr;
+        }
+
+        Node<T>* current = m_root;
+
+        // Find the rightmost node since this is based on BST.
+        while (current->rightchild != nullptr)
+        {
+            current = current->rightchild;
+        }
+        return current;
+    }
 };
 
 /**
@@ -548,23 +592,6 @@ Node<T>* AVLTree<T>::remove_helper(Node<T>* node, const T& item)
 
     // Second step is the fixing the AVL Tree's property from changed node.
     return balance(node);
-}
-
-/**
- * Finds the minimum value node in the AVL tree.
- *
- * @param node The node node of the AVL tree.
- * @return The minimum value node in the AVL tree.
- */
-template <typename T>
-Node<T>* AVLTree<T>::min(Node<T>* node)
-{
-    // Find the leftmost node since this is based on BST.
-    while (node->leftchild != nullptr)
-    {
-        node = node->leftchild;
-    }
-    return node;
 }
 
 /**
