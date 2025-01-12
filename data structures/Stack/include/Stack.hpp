@@ -167,5 +167,22 @@ public:
     {
         return m_size;
     }
+
+    void shrink_to_fit()
+    {
+        if (m_top < m_size)
+        {
+            auto new_size = (m_top == 0) ? DEFAULT_SIZE : m_top;
+            auto new_data = std::make_unique<value_type[]>(new_size);
+            
+            for (size_type i{}; i < m_top; ++i)
+            {
+                new_data[i] = std::move(m_data[i]);
+            }
+            
+            m_size = new_size;
+            m_data = std::move(new_data);
+        }
+    }
 };
 #endif // STACK_HPP
