@@ -109,12 +109,22 @@ public:
     {
         delete[] m_list_array;
     }
-
+    
+    /**
+     * @brief Returns the number of elements in the queue.
+     * @return The number of elements in the queue.
+     */
     size_type length() const noexcept
     {
         return ((m_rear + m_max_size) - m_front + 1) % m_max_size;
     }
 
+    /**
+     * @brief Returns the front element of the queue.
+     * @return The front element of the queue.
+     * 
+     * @throws std::runtime_error if the queue is empty.
+     */
     const_reference peek_front() const
     {
         if (length() == 0)
@@ -125,6 +135,12 @@ public:
         return m_list_array[m_front];
     }
 
+    /**
+     * @brief Adds an element to the rear of the queue.
+     * @param item The element to add to the queue.
+     * 
+     * @throws std::runtime_error if the queue is full.
+     */
     void enqueue(const_reference item)
     {
         if ((m_rear + 2) % m_max_size == m_front)
@@ -136,6 +152,12 @@ public:
         m_list_array[m_rear] = item;
     }
 
+    /**
+     * @brief Removes the front element of the queue.
+     * @return The front element of the queue.
+     * 
+     * @throws std::runtime_error if the queue is empty.
+     */
     value_type dequeue()
     {
         if (length() == 0)
@@ -149,16 +171,27 @@ public:
         return temp;
     }
 
+    /**
+     * @brief Returns the capacity of the queue.
+     * @return The capacity of the queue.
+     */
     size_type capacity() const noexcept
     {
         return m_max_size - 1;
     }
 
+    /**
+     * @brief Returns true if the queue is empty.
+     * @return True if the queue is empty.
+     */
     bool empty() const noexcept
     {
         return length() == 0;
     }
 
+    /**
+     * @brief Clears the queue.
+     */
     void clear() noexcept
     {
         m_front = 0;
