@@ -78,7 +78,7 @@ public:
     }
 
     Queue(std::initializer_list<T> i_list)
-        : Queue(static_cast<int>(i_list.size()))
+        : Queue(i_list.size())
     {
         for (const auto& item : i_list)
         {
