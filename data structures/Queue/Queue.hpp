@@ -5,7 +5,7 @@
 #include <cstdint>          // std::int64_t
 #include <initializer_list> // std::initializer_list
 #include <stdexcept>        // std::runtime_error
-#include <utility>          // std::swap
+#include <utility>          // std::swap, std::exchange
 
 constexpr std::int64_t DEFAULT_QUEUE_SIZE{10};
 
@@ -24,13 +24,25 @@ public:
 
 private:
     size_type m_max_size{DEFAULT_QUEUE_SIZE};
+
     size_type m_front{0};
+
     size_type m_rear{-1};
-    pointer   m_list_array{};
+
+    pointer m_list_array{};
 
 public:
+    /**
+     * @brief Default constructor.
+     */
     Queue() = default;
 
+    /**
+     * @brief Constructs a queue with the given size.
+     * @param size The size of the queue.
+     *
+     * @throws std::invalid_argument if the size is negative.
+     */
     Queue(const size_type size)
         : m_max_size{size + 1}
     {
@@ -75,15 +87,11 @@ public:
     }
 
     Queue(Queue&& other) noexcept
-        : m_max_size{other.m_max_size},
-          m_front{other.m_front},
-          m_rear{other.m_rear},
-          m_list_array{other.m_list_array}
+        : m_max_size{std::exchange(other.m_max_size, 0)},
+          m_front{std::exchange(other.m_front, 0)},
+          m_rear{std::exchange(other.m_rear, -1)},
+          m_list_array{std::exchange(other.m_list_array, nullptr)}
     {
-        other.m_list_array = nullptr;
-        other.m_max_size   = 0;
-        other.m_front      = 0;
-        other.m_rear       = -1;
     }
 
     Queue& operator=(Queue&& other) noexcept
@@ -109,20 +117,28 @@ public:
     {
         delete[] m_list_array;
     }
-    
+
     /**
      * @brief Returns the number of elements in the queue.
      * @return The number of elements in the queue.
      */
     size_type length() const noexcept
     {
+        /*
+         * For circular queues, we can't simply subtract front from rear
+         * because rear might be "behind" front in the array. The formula
+         * handles wraparound:
+         * 1. Add m_max_size to ensure positive number before modulo
+         * 2. Add 1 because rear points to last element (not one past it)
+         * 3. Use modulo to handle wraparound
+         */
         return ((m_rear + m_max_size) - m_front + 1) % m_max_size;
     }
 
     /**
      * @brief Returns the front element of the queue.
      * @return The front element of the queue.
-     * 
+     *
      * @throws std::runtime_error if the queue is empty.
      */
     const_reference peek_front() const
@@ -138,11 +154,17 @@ public:
     /**
      * @brief Adds an element to the rear of the queue.
      * @param item The element to add to the queue.
-     * 
+     *
      * @throws std::runtime_error if the queue is full.
      */
     void enqueue(const_reference item)
     {
+        /*
+         * The check (m_rear + 2) % m_max_size == m_front detects if queue is
+         * full We use +2 because:
+         * 1. +1 for the next position
+         * 2. +1 for the empty slot we maintain
+         */
         if ((m_rear + 2) % m_max_size == m_front)
         {
             throw std::runtime_error("Queue is full.");
@@ -155,11 +177,15 @@ public:
     /**
      * @brief Removes the front element of the queue.
      * @return The front element of the queue.
-     * 
+     *
      * @throws std::runtime_error if the queue is empty.
      */
     value_type dequeue()
     {
+        /*
+         * We first get the front element, then move the front pointer
+         * forward circularly using modulo
+         */
         if (length() == 0)
         {
             throw std::runtime_error("Queue is empty.");
@@ -190,10 +216,14 @@ public:
     }
 
     /**
-     * @brief Clears the queue.
+     * @brief Clears the queue by resetting pointers to initial state
      */
     void clear() noexcept
     {
+        /*
+         * No need to actually clear memory since front/rear pointers
+         * control what's considered "in" the queue
+         */
         m_front = 0;
         m_rear  = -1;
     }
