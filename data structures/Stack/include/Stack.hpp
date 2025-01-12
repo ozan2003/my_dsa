@@ -19,9 +19,10 @@ public:
     using const_reference = const T&;
 
 private:
-    size_type                     m_size{DEFAULT_SIZE};           // Size of the stack.
-    std::unique_ptr<value_type[]> m_data{new value_type[m_size]}; // Pointer to the stack.
-    size_type                     m_top{};                        // Index of the top of the stack.
+    size_type m_size{DEFAULT_SIZE}; // Size of the stack.
+    // Pointer to the stack.
+    std::unique_ptr<value_type[]> m_data{new value_type[m_size]};
+    size_type                     m_top{}; // Index of the top of the stack.
 
     void resize()
     {
@@ -32,7 +33,8 @@ private:
             m_size = DEFAULT_SIZE; // Give it an initial size.
         }
 
-        auto temp = std::make_unique<value_type[]>(m_size); // Create a new stack with the new size.
+        // Create a new stack with the new size.
+        auto temp = std::make_unique<value_type[]>(m_size);
 
         // Move the items from the old stack to the new stack.
         for (size_type i{}; i < m_size; ++i)
@@ -76,7 +78,8 @@ public:
             m_data.reset(); // Delete the old stack.
 
             m_size = other.m_size;           // Copy the size.
-            m_data = new value_type[m_size]; // Create a new stack with the given size.
+            m_data = new value_type[m_size]; // Create a new stack with the
+                                             // given size.
 
             // Copy the items from the other stack to this stack.
             for (size_type i{}; i < m_size; ++i)
@@ -89,7 +92,8 @@ public:
 
     // Move constructor.
     Stack(Stack<value_type>&& other) noexcept
-        : m_size{std::exchange(other.m_size, 0)}, m_data{std::exchange(other.m_data, nullptr)}
+        : m_size{std::exchange(other.m_size, 0)},
+          m_data{std::exchange(other.m_data, nullptr)}
     {
     }
 
@@ -131,7 +135,9 @@ public:
         {
             throw std::out_of_range("Stack is empty!");
         }
-        value_type item = m_data[--m_top]; // Move down the index and get the item.
+
+        // Move down the index and get the item.
+        value_type item = m_data[--m_top];
 
         return item; // Return the item.
     }
