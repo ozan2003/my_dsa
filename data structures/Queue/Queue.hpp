@@ -7,6 +7,8 @@
 #include <stdexcept>        // std::runtime_error
 #include <utility>          // std::swap
 
+constexpr std::int64_t DEFAULT_QUEUE_SIZE{10};
+
 template <typename T>
 class Queue
 {
@@ -21,7 +23,7 @@ public:
     using const_pointer   = const value_type*;
 
 private:
-    size_type m_max_size{};
+    size_type m_max_size{DEFAULT_QUEUE_SIZE};
     size_type m_front{0};
     size_type m_rear{-1};
     pointer   m_list_array{};
