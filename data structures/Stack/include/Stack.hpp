@@ -9,6 +9,11 @@
 constexpr std::size_t DEFAULT_SIZE{5};  // Default size of the stack.
 constexpr std::size_t RESIZE_FACTOR{2}; // Resize factor of the stack.
 
+/**
+ * @brief A Last-In-First-Out (LIFO) data structure. It is implemented as
+ * a dynamic array.
+ * @tparam T The type of the items in the stack.
+ */
 template <typename T>
 class Stack
 {
@@ -24,6 +29,11 @@ private:
     std::unique_ptr<value_type[]> m_data{new value_type[m_size]};
     size_type                     m_top{}; // Index of the top of the stack.
 
+    /**
+     * @brief Resizes the stack.
+     *
+     * @details The stack is resized by a factor of `RESIZE_FACTOR`.
+     */
     void resize()
     {
         m_size *= RESIZE_FACTOR; // Increase the size.
@@ -50,7 +60,10 @@ public:
     // Default constructor.
     Stack() = default;
 
-    // Constructor with given size.
+    /**
+     * @brief Constructs a stack with a given size.
+     * @param size The size of the stack.
+     */
     Stack(const size_type size)
         : m_size{size}, m_data{new T[m_size]}
     {
@@ -109,7 +122,10 @@ public:
         return *this;
     }
 
-    // Add item to the top of the stack.
+    /**
+     * @brief Adds an item to the top of the stack.
+     * @param item The item to add to the stack.
+     */
     void push(const_reference item) noexcept
     {
         // If the stack is full, resize it.
@@ -120,13 +136,20 @@ public:
         m_data[m_top++] = item; // Add item to the top of the stack.
     }
 
-    // Clear the stack.
+    /**
+     * @brief Clears the stack.
+     */
     void clear() noexcept
     {
         m_top = 0; // Reset the index of the top of the stack.
     }
 
-    // Remove item from the top of the stack.
+    /**
+     * @brief Removes the item at the top of the stack.
+     * @return The item at the top of the stack.
+     *
+     * @throws std::out_of_range if the stack is empty.
+     */
     value_type pop()
     {
         if (empty()) // If the stack is empty.
@@ -140,21 +163,30 @@ public:
         return item; // Return the item.
     }
 
-    // Check if the stack is empty.
+    /**
+     * @brief Checks if the stack is empty.
+     * @return True if the stack is empty, false otherwise.
+     */
     [[nodiscard]]
     bool empty() const noexcept
     {
         return m_top == 0;
     }
 
-    // Return the size of the stack.
+    /**
+     * @brief Returns the number of items in the stack.
+     * @return The number of items in the stack.
+     */
     [[nodiscard]]
     size_type size() const noexcept
     {
         return m_top;
     }
 
-    // Return the item at the top of the stack.
+    /**
+     * @brief Returns the item at the top of the stack.
+     * @return The item at the top of the stack.
+     */
     [[nodiscard]]
     reference top() const
     {
@@ -165,13 +197,20 @@ public:
         return m_data[m_top - 1];
     }
 
-    // Add a capacity() method to distinguish from size()
+    /**
+     * @brief Returns the capacity of the underlying array.
+     * @return The capacity of the stack.
+     */
     [[nodiscard]]
     size_type capacity() const noexcept
     {
         return m_size;
     }
 
+    /**
+     * @brief Shrinks the stack to fit the number of items in it.
+     * Reduces the memory allocated for the stack.
+     */
     void shrink_to_fit()
     {
         if (m_top < m_size)
@@ -189,17 +228,25 @@ public:
         }
     }
 
+    /**
+     * @brief Allocates memory for a new stack with a given capacity.
+     * This is useful for avoiding unnecessary reallocations.
+     * @param new_capacity The new capacity of the stack.
+     */
     void reserve(size_type new_capacity)
     {
         if (new_capacity > m_size)
         {
+            // Create a new stack with the new capacity...
             auto new_data = std::make_unique<value_type[]>(new_capacity);
 
+            // Copy the items from the old stack to the new stack.
             for (size_type i{}; i < m_top; ++i)
             {
                 new_data[i] = std::move(m_data[i]);
             }
 
+            // Update the size and the data.
             m_size = new_capacity;
             m_data = std::move(new_data);
         }
