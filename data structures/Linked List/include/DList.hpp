@@ -483,15 +483,6 @@ public:
         return false;
     }
 
-    // Swap two lists
-    void swap(DList& other) noexcept
-    {
-        // Just swap the pointers and the size.
-        std::swap(m_head, other.m_head);
-        std::swap(m_tail, other.m_tail);
-        std::swap(m_size, other.m_size);
-    }
-
     // Construct element directly in the new node at the front
     template <typename... Args>
     void emplace_front(Args&&... args)
