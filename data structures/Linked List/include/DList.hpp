@@ -445,6 +445,29 @@ public:
         // Swap the head and the tail.
         std::swap(m_head, m_tail);
     }
+
+    // Check if a value exists in the list
+    [[nodiscard]]
+    bool contains(const T& value) const
+    {
+        for (const auto& item : *this)
+        {
+            if (item == value)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // Swap two lists
+    void swap(DList& other) noexcept
+    {
+        // Just swap the pointers and the size.
+        std::swap(m_head, other.m_head);
+        std::swap(m_tail, other.m_tail);
+        std::swap(m_size, other.m_size);
+    }
 };
 
 template <typename T>
