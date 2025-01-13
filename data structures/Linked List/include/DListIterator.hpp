@@ -28,7 +28,8 @@ private:
 public:
     DListIterator() = default;
 
-    // Explicit because we don't want the compiler to do any implicit conversions.
+    // Explicit because we don't want the compiler to do any implicit
+    // conversions.
     explicit DListIterator(pointer ptr)
         : m_ptr{ptr}
     {
@@ -86,6 +87,82 @@ public:
     bool operator!=(const DListIterator& other) const
     {
         return !(*this == other); // Reuse the equality operator.
+    }
+};
+
+template <typename T>
+class DListConstIterator
+{
+public:
+    using iterator_category = std::bidirectional_iterator_tag;
+    using difference_type   = std::ptrdiff_t;
+    using value_type        = T;
+    using pointer           = const Node<T>*; // Const pointer to a node.
+    using reference         = const T&;       // Const reference to the data.
+
+private:
+    pointer m_ptr{nullptr};
+
+public:
+    DListConstIterator() = default;
+
+    explicit DListConstIterator(pointer ptr)
+        : m_ptr{ptr}
+    {
+    }
+
+    // Allow conversion from regular iterator to const_iterator
+    DListConstIterator(const DListIterator<T>& other)
+        : m_ptr{other.operator->()}
+    {
+    }
+
+    // The rest is the same as the regular iterator.
+
+    reference operator*() const
+    {
+        return m_ptr->data;
+    }
+
+    pointer operator->() const
+    {
+        return m_ptr;
+    }
+
+    DListConstIterator& operator++()
+    {
+        m_ptr = m_ptr->next;
+        return *this;
+    }
+
+    DListConstIterator operator++(int)
+    {
+        DListConstIterator tmp{*this};
+        ++(*this);
+        return tmp;
+    }
+
+    DListConstIterator& operator--()
+    {
+        m_ptr = m_ptr->prev;
+        return *this;
+    }
+
+    DListConstIterator operator--(int)
+    {
+        DListConstIterator tmp{*this};
+        --(*this);
+        return tmp;
+    }
+
+    bool operator==(const DListConstIterator& other) const
+    {
+        return m_ptr == other.m_ptr;
+    }
+
+    bool operator!=(const DListConstIterator& other) const
+    {
+        return !(*this == other);
     }
 };
 

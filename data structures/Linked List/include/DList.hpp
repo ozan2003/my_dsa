@@ -150,6 +150,31 @@ public:
         return DListIterator{m_head->prev};
     }
 
+    // Const iterators. Same as the regular iterators but starts with c.
+    [[nodiscard]]
+    DListConstIterator<T> cbegin() const
+    {
+        return DListConstIterator<T>{m_head};
+    }
+
+    [[nodiscard]]
+    DListConstIterator<T> crbegin() const
+    {
+        return DListConstIterator<T>{m_tail};
+    }
+
+    [[nodiscard]]
+    DListConstIterator<T> cend() const
+    {
+        return DListConstIterator<T>{m_tail->next};
+    }
+
+    [[nodiscard]]
+    DListConstIterator<T> crend() const
+    {
+        return DListConstIterator<T>{m_head->prev};
+    }
+
     [[nodiscard]]
     T& front()
     {
