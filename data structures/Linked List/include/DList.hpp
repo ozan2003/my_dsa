@@ -140,14 +140,14 @@ public:
     DListIterator<T> end() const
     {
         // The end is nullptr.
-        return DListIterator{m_tail->next};
+        return DListIterator{m_tail ? m_tail->next : nullptr};
     }
 
     [[nodiscard]]
     DListIterator<T> rend() const
     {
         // The rend is nullptr.
-        return DListIterator{m_head->prev};
+        return DListIterator{m_head ? m_head->prev : nullptr};
     }
 
     // Const iterators. Same as the regular iterators but starts with c.
@@ -166,13 +166,13 @@ public:
     [[nodiscard]]
     DListConstIterator<T> cend() const
     {
-        return DListConstIterator<T>{m_tail->next};
+        return DListConstIterator<T>{m_tail ? m_tail->next : nullptr};
     }
 
     [[nodiscard]]
     DListConstIterator<T> crend() const
     {
-        return DListConstIterator<T>{m_head->prev};
+        return DListConstIterator<T>{m_head ? m_head->prev : nullptr};
     }
 
     [[nodiscard]]
