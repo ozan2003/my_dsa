@@ -491,6 +491,49 @@ public:
         std::swap(m_tail, other.m_tail);
         std::swap(m_size, other.m_size);
     }
+
+    // Construct element directly in the new node at the front
+    template <typename... Args>
+    void emplace_front(Args&&... args)
+    {
+        // Create a new node and construct the element in-place using perfect
+        // forwarding
+        auto new_item =
+            new Node<T>{T(std::forward<Args>(args)...), nullptr, m_head};
+
+        if (m_head == nullptr)
+        {
+            m_head = new_item;
+            m_tail = new_item;
+        }
+        else
+        {
+            m_head->prev = new_item;
+            m_head       = new_item;
+        }
+        m_size++;
+    }
+
+    // Construct element directly in the new node at the back
+    template <typename... Args>
+    void emplace_back(Args&&... args)
+    {
+        // Create a new node and construct the element in-place using perfect
+        // forwarding
+        auto new_item = new Node<T>{T(std::forward<Args>(args)...), m_tail};
+
+        if (m_tail == nullptr)
+        {
+            m_head = new_item;
+            m_tail = new_item;
+        }
+        else
+        {
+            m_tail->next = new_item;
+            m_tail       = new_item;
+        }
+        m_size++;
+    }
 };
 
 template <typename T>
