@@ -107,10 +107,21 @@ public:
 
     void clear()
     {
-        while (m_size > 0ULL)
+        // Start from the beginning
+        Node<T>* current = m_head;
+
+        // Traverse the list while deleting nodes
+        while (current != nullptr)
         {
-            pop_back();
+            Node<T>* next = current->next; // Save next pointer before deletion
+            delete current;                // Delete current node
+            current = next;                // Move to next node
         }
+
+        // Reset member variables
+        m_head = nullptr;
+        m_tail = nullptr;
+        m_size = 0ULL;
     }
 
     DListIterator<T> begin() const
