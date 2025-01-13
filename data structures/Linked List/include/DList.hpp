@@ -124,48 +124,57 @@ public:
         m_size = 0ULL;
     }
 
+    [[nodiscard]]
     DListIterator<T> begin() const
     {
         return DListIterator{m_head};
     }
 
+    [[nodiscard]]
     DListIterator<T> rbegin() const
     {
         return DListIterator{m_tail};
     }
 
+    [[nodiscard]]
     DListIterator<T> end() const
     {
         // The end is nullptr.
         return DListIterator{m_tail->next};
     }
 
+    [[nodiscard]]
     DListIterator<T> rend() const
     {
         // The rend is nullptr.
         return DListIterator{m_head->prev};
     }
 
+    [[nodiscard]]
     T& front()
     {
         return *begin();
     }
 
+    [[nodiscard]]
     T& back()
     {
         return *rbegin();
     }
 
+    [[nodiscard]]
     const T& front() const
     {
         return m_head->data;
     }
 
+    [[nodiscard]]
     std::size_t size() const
     {
         return m_size;
     }
 
+    [[nodiscard]]
     bool empty() const
     {
         return m_size == 0ULL;
