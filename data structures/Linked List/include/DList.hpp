@@ -162,7 +162,8 @@ public:
 
     void push_front(const T& item)
     {
-        // Create a node holding our item and its next pointer pointing to the head.
+        // Create a node holding our item and its next pointer pointing to the
+        // head.
         auto new_item = new Node<T>{item, nullptr, m_head};
 
         // If the head is the last element
@@ -194,7 +195,8 @@ public:
         }
         else
         {
-            // Otherwise, update the current tail's next pointer to the new item.
+            // Otherwise, update the current tail's next pointer to the new
+            // item.
             m_tail->next = new_item;
             m_tail       = new_item; // Move the tail.
         }
@@ -226,15 +228,17 @@ public:
                 temp = temp->next;
             }
 
-            // Update pointers, connect new_item to the previous element two ways.
-            // Update the previous element's next pointer.
+            // Update pointers, connect new_item to the previous element two
+            // ways. Update the previous element's next pointer.
             temp->prev->next = new_item;
-            // Update the new item's previous pointer pointing to the previous element.
+            // Update the new item's previous pointer pointing to the previous
+            // element.
             new_item->prev = temp->prev;
             // Connect new_item to the next element two ways.
             // Update the new item's next pointer pointing to the next element.
             new_item->next = temp;
-            // Update the next element's previous pointer pointing to the new item.
+            // Update the next element's previous pointer pointing to the new
+            // item.
             temp->prev = new_item;
 
             m_size++;
@@ -322,9 +326,11 @@ public:
             else
             {
                 // Update pointers.
-                // Connect the previous element's next pointer to the next element.
+                // Connect the previous element's next pointer to the next
+                // element.
                 marked->prev->next = marked->next;
-                // Connect the next element's previous pointer to the previous element.
+                // Connect the next element's previous pointer to the previous
+                // element.
                 marked->next->prev = marked->prev;
 
                 delete marked;
