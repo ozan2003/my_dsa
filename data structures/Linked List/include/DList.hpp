@@ -447,7 +447,8 @@ public:
     }
 
     // Check if a value exists in the list
-    [[nodiscard]] bool contains(const T& value) const
+    [[nodiscard]]
+    bool contains(const T& value) const
     {
         for (const auto& item : *this)
         {
