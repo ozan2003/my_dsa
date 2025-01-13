@@ -250,20 +250,23 @@ public:
         }
 
         Node<T>* temp = m_head;
+        m_head = m_head->next; // Move the head one forward. `temp` is still
+                               // pointing to the previous head.
 
-        m_head       = m_head->next; // Move m_head one element forward.
-        m_head->prev = nullptr;      // Invalidate m_head's previous pointer.
-        delete temp;                 // Get rid of the previous element.
-
-        m_size--;
-
-        // If the list is empty.
-        if (m_size == 0ULL)
+        // If the list has more than one element.
+        if (m_head != nullptr)
         {
-            // Reset m_head and m_tail.
-            m_head = nullptr;
+            m_head->prev = nullptr; // Cut the link to the previous element.
+        }
+        // The list has one element. m_head and m_tail are the same.
+        else
+        {
+            // List is becoming empty.
             m_tail = nullptr;
         }
+
+        delete temp;
+        m_size--;
     }
 
     void pop_back()
