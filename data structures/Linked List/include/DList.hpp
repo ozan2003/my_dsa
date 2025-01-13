@@ -13,18 +13,29 @@
 template <typename T>
 class DList
 {
-private:
-    Node<T>* m_head{nullptr};
-    Node<T>* m_tail{nullptr};
+public:
+    // Type aliases for STL compatibility.
+    using value_type      = T;
+    using size_type       = std::size_t;
+    using reference       = value_type&;
+    using const_reference = const value_type&;
+    using pointer         = value_type*;
+    using const_pointer   = const value_type*;
+    using iterator        = DListIterator<value_type>;
+    using const_iterator  = DListConstIterator<value_type>;
 
-    std::size_t m_size{};
+private:
+    Node<value_type>* m_head{nullptr};
+    Node<value_type>* m_tail{nullptr};
+
+    size_type m_size{};
 
 public:
     // Default ctor.
     DList() = default;
 
     // Initializer list ctor.
-    DList(const std::initializer_list<T> i_list)
+    DList(const std::initializer_list<value_type> i_list)
     {
         for (const auto& item : i_list)
         {
@@ -33,7 +44,7 @@ public:
     }
 
     // Copy ctor.
-    DList(const DList<T>& other)
+    DList(const DList<value_type>& other)
     {
         auto temp = other.m_head; // Start from the beginning.
 
@@ -47,7 +58,7 @@ public:
     }
 
     // Move ctor.
-    DList(DList<T>&& other) noexcept
+    DList(DList<value_type>&& other) noexcept
         // Member-wise move.
         : m_head{std::exchange(other.m_head, nullptr)},
           m_tail{std::exchange(other.m_tail, nullptr)},
@@ -59,7 +70,7 @@ public:
     ~DList()
     {
         // Start from the beginning.
-        Node<T>* temp = m_head;
+        Node<value_type>* temp = m_head;
 
         // Traverse the list while deleting previous elements.
         while (temp != nullptr)
@@ -71,7 +82,7 @@ public:
     }
 
     // Assignment operator.
-    DList& operator=(const DList<T>& other)
+    DList& operator=(const DList<value_type>& other)
     {
         if (&other != this)
         {
@@ -108,14 +119,15 @@ public:
     void clear()
     {
         // Start from the beginning
-        Node<T>* current = m_head;
+        Node<value_type>* current = m_head;
 
         // Traverse the list while deleting nodes
         while (current != nullptr)
         {
-            Node<T>* next = current->next; // Save next pointer before deletion
-            delete current;                // Delete current node
-            current = next;                // Move to next node
+            Node<value_type>* next =
+                current->next; // Save next pointer before deletion
+            delete current;    // Delete current node
+            current = next;    // Move to next node
         }
 
         // Reset member variables
@@ -125,26 +137,26 @@ public:
     }
 
     [[nodiscard]]
-    DListIterator<T> begin() const
+    iterator begin() const
     {
         return DListIterator{m_head};
     }
 
     [[nodiscard]]
-    DListIterator<T> rbegin() const
+    iterator rbegin() const
     {
         return DListIterator{m_tail};
     }
 
     [[nodiscard]]
-    DListIterator<T> end() const
+    iterator end() const
     {
         // The end is nullptr.
         return DListIterator{m_tail ? m_tail->next : nullptr};
     }
 
     [[nodiscard]]
-    DListIterator<T> rend() const
+    iterator rend() const
     {
         // The rend is nullptr.
         return DListIterator{m_head ? m_head->prev : nullptr};
@@ -152,49 +164,49 @@ public:
 
     // Const iterators. Same as the regular iterators but starts with c.
     [[nodiscard]]
-    DListConstIterator<T> cbegin() const
+    const_iterator cbegin() const
     {
-        return DListConstIterator<T>{m_head};
+        return DListConstIterator<value_type>{m_head};
     }
 
     [[nodiscard]]
-    DListConstIterator<T> crbegin() const
+    const_iterator crbegin() const
     {
-        return DListConstIterator<T>{m_tail};
+        return DListConstIterator<value_type>{m_tail};
     }
 
     [[nodiscard]]
-    DListConstIterator<T> cend() const
+    const_iterator cend() const
     {
-        return DListConstIterator<T>{m_tail ? m_tail->next : nullptr};
+        return DListConstIterator<value_type>{m_tail ? m_tail->next : nullptr};
     }
 
     [[nodiscard]]
-    DListConstIterator<T> crend() const
+    const_iterator crend() const
     {
-        return DListConstIterator<T>{m_head ? m_head->prev : nullptr};
+        return DListConstIterator<value_type>{m_head ? m_head->prev : nullptr};
     }
 
     [[nodiscard]]
-    T& front()
+    reference front()
     {
         return *begin();
     }
 
     [[nodiscard]]
-    T& back()
+    reference back()
     {
         return *rbegin();
     }
 
     [[nodiscard]]
-    const T& front() const
+    const_reference front() const
     {
         return m_head->data;
     }
 
     [[nodiscard]]
-    std::size_t size() const
+    size_type size() const
     {
         return m_size;
     }
@@ -205,11 +217,11 @@ public:
         return m_size == 0ULL;
     }
 
-    void push_front(const T& item)
+    void push_front(const_reference item)
     {
         // Create a node holding our item and its next pointer pointing to the
         // head.
-        auto new_item = new Node<T>{item, nullptr, m_head};
+        auto new_item = new Node<value_type>{item, nullptr, m_head};
 
         // If the head is the last element
         // (meaning it is the only element),
@@ -227,10 +239,10 @@ public:
         m_size++;
     }
 
-    void push_back(const T& item)
+    void push_back(const_reference item)
     {
         // Create a node whose prev pointer pointing to the tail.
-        auto new_item = new Node<T>{item, m_tail};
+        auto new_item = new Node<value_type>{item, m_tail};
 
         if (m_tail == nullptr)
         {
@@ -249,7 +261,7 @@ public:
         m_size++;
     }
 
-    void insert(const std::size_t pos, const T& item)
+    void insert(const size_type pos, const_reference item)
     {
         // If the position is the end of the list, append the new node.
         if (pos >= m_size)
@@ -264,11 +276,11 @@ public:
         else
         {
             // Create a new node.
-            auto new_item = new Node<T>{item};
+            auto new_item = new Node<value_type>{item};
 
             // Starting from the head, go to the position.
             auto temp = m_head;
-            for (std::size_t i{}; i < pos; ++i)
+            for (size_type i{}; i < pos; ++i)
             {
                 temp = temp->next;
             }
@@ -298,7 +310,7 @@ public:
             return;
         }
 
-        Node<T>* temp = m_head;
+        Node<value_type>* temp = m_head;
         m_head = m_head->next; // Move the head one forward. `temp` is still
                                // pointing to the previous head.
 
@@ -320,7 +332,7 @@ public:
 
     void pop_back()
     {
-        Node<T>* temp = m_tail;
+        Node<value_type>* temp = m_tail;
 
         // If the list is empty.
         if (temp == nullptr)
@@ -347,7 +359,7 @@ public:
         m_size--; // Don't forget to decrement the size.
     }
 
-    void remove(const std::size_t pos)
+    void remove(const size_type pos)
     {
         if (pos >= m_size)
         {
@@ -355,9 +367,9 @@ public:
         }
         else
         {
-            Node<T>* marked = m_head;
+            Node<value_type>* marked = m_head;
             // Go to the pos.
-            for (std::size_t i{}; i < pos; ++i)
+            for (size_type i{}; i < pos; ++i)
             {
                 marked = marked->next;
             }
@@ -391,30 +403,30 @@ public:
         }
     }
 
-    T& operator[](const std::size_t pos)
+    reference operator[](const size_type pos)
     {
         if (pos >= m_size)
         {
             throw std::out_of_range("Index out of bounds");
         }
 
-        Node<T>* temp = m_head;
-        for (std::size_t i{}; i != pos; ++i)
+        Node<value_type>* temp = m_head;
+        for (size_type i{}; i != pos; ++i)
         {
             temp = temp->next;
         }
         return temp->data;
     }
 
-    const T& operator[](const std::size_t pos) const
+    const_reference operator[](const size_type pos) const
     {
         if (pos >= m_size)
         {
             throw std::out_of_range("Index out of bounds");
         }
 
-        Node<T>* temp = m_head;
-        for (std::size_t i{}; i != pos; ++i)
+        Node<value_type>* temp = m_head;
+        for (size_type i{}; i != pos; ++i)
         {
             temp = temp->next;
         }
@@ -425,9 +437,9 @@ public:
     void reverse()
     {
         // Start from the head.
-        Node<T>* temp = m_head;
-        Node<T>* prev = nullptr;
-        Node<T>* next = nullptr;
+        Node<value_type>* temp = m_head;
+        Node<value_type>* prev = nullptr;
+        Node<value_type>* next = nullptr;
 
         // Traverse the list.
         while (temp != nullptr)
@@ -448,7 +460,7 @@ public:
 
     // Check if a value exists in the list
     [[nodiscard]]
-    bool contains(const T& value) const
+    bool contains(const_reference value) const
     {
         for (const auto& item : *this)
         {
@@ -471,7 +483,7 @@ public:
 
     // Check if a value exists in the list
     [[nodiscard]]
-    bool contains(const T& value) const
+    bool contains(const_reference value) const
     {
         for (const auto& item : *this)
         {
@@ -490,7 +502,9 @@ public:
         // Create a new node and construct the element in-place using perfect
         // forwarding
         auto new_item =
-            new Node<T>{T(std::forward<Args>(args)...), nullptr, m_head};
+            new Node<value_type>{value_type(std::forward<Args>(args)...),
+                                 nullptr,
+                                 m_head};
 
         if (m_head == nullptr)
         {
@@ -511,7 +525,9 @@ public:
     {
         // Create a new node and construct the element in-place using perfect
         // forwarding
-        auto new_item = new Node<T>{T(std::forward<Args>(args)...), m_tail};
+        auto new_item =
+            new Node<value_type>{value_type(std::forward<Args>(args)...),
+                                 m_tail};
 
         if (m_tail == nullptr)
         {
