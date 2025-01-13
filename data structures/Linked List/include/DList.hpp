@@ -339,25 +339,31 @@ public:
 
     T& operator[](const std::size_t pos)
     {
-        Node<T>* temp = m_head;
+        if (pos >= m_size)
+        {
+            throw std::out_of_range("Index out of bounds");
+        }
 
+        Node<T>* temp = m_head;
         for (std::size_t i{}; i != pos; ++i)
         {
             temp = temp->next;
         }
-
         return temp->data;
     }
 
     const T& operator[](const std::size_t pos) const
     {
-        Node<T>* temp = m_head;
+        if (pos >= m_size)
+        {
+            throw std::out_of_range("Index out of bounds");
+        }
 
+        Node<T>* temp = m_head;
         for (std::size_t i{}; i != pos; ++i)
         {
             temp = temp->next;
         }
-
         return temp->data;
     }
 
