@@ -1,4 +1,4 @@
-﻿// An array-based approach of list.
+// An array-based approach of list.
 #ifndef ARRAYLIST_HPP
 #define ARRAYLIST_HPP
 
@@ -147,6 +147,7 @@ public:
     ~ArrayList()
     {
         delete[] m_list_array;
+        m_list_array = nullptr; // Freeing pointer doesn't make it nullptr.
     }
 
     void clear()
