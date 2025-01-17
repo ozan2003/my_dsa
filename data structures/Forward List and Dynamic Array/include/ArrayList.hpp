@@ -161,6 +161,11 @@ public:
     // Insert "item" at given position.
     void insert(const size_type pos, const_reference item) override
     {
+        if (pos > m_size)
+        {
+            throw std::out_of_range{"Position out of range."};
+        }
+        
         if (m_size == m_capacity)
         {
             reserve();
