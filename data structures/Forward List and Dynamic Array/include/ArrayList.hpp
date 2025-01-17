@@ -1,4 +1,4 @@
-// An array-based approach of list.
+﻿// An array-based approach of list.
 #ifndef ARRAYLIST_HPP
 #define ARRAYLIST_HPP
 
@@ -37,11 +37,13 @@ private:
             m_capacity *= GROWTH_FACTOR;
         }
 
-        pointer temp = new value_type[m_capacity]; // Allocate new array in the heap.
+        pointer temp =
+            new value_type[m_capacity]; // Allocate new array in the heap.
 
         for (size_type i{}; i < m_size; ++i)
         {
-            temp[i] = std::move(m_list_array[i]); // Move all items of original array.
+            temp[i] =
+                std::move(m_list_array[i]); // Move all items of original array.
         }
 
         delete[] m_list_array; // Get rid of the original array.
@@ -54,7 +56,8 @@ public:
     ArrayList(const size_type size, const_reference value = value_type{})
         : m_capacity{size * GROWTH_FACTOR},
           m_size{size},
-          m_list_array{new value_type[m_capacity]{value}} // ArrayList elements are initialized by value.
+          m_list_array{new value_type[m_capacity]{value}}
+          // ArrayList elements are initialized by value.
     {
     }
 
@@ -122,7 +125,8 @@ public:
     ArrayList(ArrayList&& other) noexcept
         : List<value_type>{},
           // Member-wise move.
-          // Replace the value of "other.m_capacity" with 0 and return the old value.
+          // Replace the value of "other.m_capacity" with 0 and return the old
+          // value.
           m_capacity{std::exchange(other.m_capacity, 0)},
           m_size{std::exchange(other.m_size, 0)},
           m_list_array{std::exchange(other.m_list_array, nullptr)}
@@ -165,12 +169,12 @@ public:
         {
             throw std::out_of_range{"Position out of range."};
         }
-        
+
         if (m_size == m_capacity)
         {
             reserve();
         }
-        //assert(pos < m_size && "Out of range.\n");
+        // assert(pos < m_size && "Out of range.\n");
 
         for (size_type s{m_size}; pos < s; --s) // Shift elements up...
         {
@@ -201,7 +205,8 @@ public:
         }
         // assert(m_size < m_capacity && "List capacity exceeded.\n");
 
-        m_list_array[m_size] = std::move(item); // Append "item" at the end of the list.
+        m_list_array[m_size] =
+            std::move(item); // Append "item" at the end of the list.
         m_size++;
     }
 
@@ -212,11 +217,12 @@ public:
         {
             throw std::out_of_range{"No element at position."};
         }
-        //assert(pos < m_size && "No element.\n");
+        // assert(pos < m_size && "No element.\n");
 
         // T item = m_list_array[pos]; // Copy the item.
 
-        // m_size - 1, because we're dealing with array indexes (array[size] is out of bounds).
+        // m_size - 1, because we're dealing with array indexes (array[size] is
+        // out of bounds).
         for (size_type i{pos}; i < m_size - 1; ++i)
         {
             m_list_array[i] = m_list_array[i + 1]; // Shift elements down.
