@@ -208,6 +208,10 @@ public:
     // Remove and return the current element.
     void remove(const size_type pos) override
     {
+        if (pos >= m_size)
+        {
+            throw std::out_of_range{"No element at position."};
+        }
         //assert(pos < m_size && "No element.\n");
 
         // T item = m_list_array[pos]; // Copy the item.
