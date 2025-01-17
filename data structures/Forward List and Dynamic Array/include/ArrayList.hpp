@@ -28,11 +28,13 @@ private:
 
     void reserve()
     {
-        m_capacity *= GROWTH_FACTOR;
-
         if (m_capacity == 0)
         {
             m_capacity = INITIAL_SIZE;
+        }
+        else
+        {
+            m_capacity *= GROWTH_FACTOR;
         }
 
         pointer temp = new value_type[m_capacity]; // Allocate new array in the heap.
