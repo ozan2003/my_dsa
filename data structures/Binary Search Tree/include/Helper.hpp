@@ -7,7 +7,6 @@
 
 namespace helper
 {
-
     /**
      * Finds the minimum value node in the tree.
      *
@@ -25,28 +24,19 @@ namespace helper
     }
 
     /**
-     * Removes the minimum value node from the tree.
+     * Finds the maximum value node in the tree.
      *
      * @param node The root node of the tree.
-     * @return The new root after removal.
+     * @return The node containing the maximum value.
      */
     template <typename T>
-    Node<T>* remove_min(Node<T>* node)
+    Node<T>* max(Node<T>* node)
     {
-        if (node == nullptr)
+        if (node == nullptr || node->rightchild == nullptr)
         {
-            return nullptr;
+            return node;
         }
-
-        if (node->leftchild == nullptr)
-        {
-            Node<T>* right = node->rightchild;
-            delete node;
-            return rig
-            ht;
-        }
-        node->leftchild = remove_min(node->leftchild);
-        return node;
+        return max(node->leftchild);
     }
 
     /**
@@ -205,7 +195,7 @@ namespace helper
         Node<T>* new_node    = new Node<T>{node->data};
         new_node->leftchild  = deep_copy(node->leftchild);
         new_node->rightchild = deep_copy(node->rightchild);
-        
+
         return new_node;
     }
 
