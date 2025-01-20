@@ -1,3 +1,5 @@
+#pragma once
+
 #include <algorithm> // std::min_element, std::iter_swap
 #include <cmath>     // std::log10
 #include <concepts>  // std::totally_ordered, std::predicate

@@ -1,5 +1,4 @@
-#ifndef HEAPSORT_HPP
-#define HEAPSORT_HPP
+#pragma once
 
 #include <algorithm>
 #include <vector>
@@ -107,4 +106,3 @@ void heap_sort(std::vector<T>& items)
         sift_down(items, 0, end); // Heap order is broken, so restore it.
     }
 }
-#endif // HEAPSORT_HPP

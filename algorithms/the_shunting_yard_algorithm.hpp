@@ -1,3 +1,5 @@
+#pragma once
+
 /* The shunting yard algorithm is used for
  * converting infix expression to postfix.
 
@@ -7,7 +9,6 @@
 #include <algorithm> // std::count
 #include <cctype>    // std::isdigit
 #include <format>    // std::format
-#include <iostream>  // std::cout, std::cerr
 #include <stack>     // std::stack
 #include <stdexcept> // std::invalid_argument
 #include <string>    // std::string

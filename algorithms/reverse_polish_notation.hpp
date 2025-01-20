@@ -1,3 +1,5 @@
+#pragma once
+
 #include <cctype>   // std::isdigit
 #include <cmath>    // std::pow
 #include <format>   // std::format
