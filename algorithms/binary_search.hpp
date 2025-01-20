@@ -1,5 +1,4 @@
 #include <ranges>
-#include <vector>
 
 /**
  * @brief Perform binary search. The range must be sorted.
@@ -9,7 +8,7 @@
  * @return The iterator to the found element, one past the end if not found.
  */
 template <std::ranges::range Rng>
-std::vector<int>::const_iterator bin_search(
+std::ranges::const_iterator_t<Rng> bin_search(
     const Rng&                             rng,
     const std::ranges::range_value_t<Rng>& target)
 {
