@@ -26,17 +26,3 @@ auto sliding_window(R&& rng, const std::size_t n)
     }
     co_yield window; // Yield the last window.
 }
-
-int main()
-{
-    auto rng = std::views::iota(1, 10 + 1);
-    // Just printing.
-    for (const auto& window : sliding_window(rng, 5))
-    {
-        for (const auto& i : window)
-        {
-            std::cout << i << ' ';
-        }
-        std::cout << '\n';
-    }
-}

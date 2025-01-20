@@ -1,4 +1,3 @@
-#include <iostream>
 #include <ranges>
 #include <vector>
 
@@ -41,26 +40,4 @@ std::vector<int>::const_iterator bin_search(
     }
     // Indicate nothing is found by returning non-valid iterator.
     return rng.end();
-}
-
-int main()
-{
-    constexpr std::size_t SIZE{20'000'000ull};
-
-    std::vector<int> v;
-    v.reserve(SIZE);
-
-    for (std::size_t i{}; i < v.capacity(); ++i)
-    {
-        v.push_back(static_cast<int>(i));
-    }
-
-    if (auto result = bin_search(v, 19'090'112); result != v.end())
-    {
-        std::cout << *result << '\n';
-    }
-    else
-    {
-        std::cout << "Not found\n";
-    }
 }

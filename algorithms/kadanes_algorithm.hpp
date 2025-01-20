@@ -18,11 +18,3 @@ T max_subarray_sum(const std::vector<T>& arr)
     }
     return best_sum;
 }
-
-int main()
-{
-    const std::vector arr{-1, 2, 4, -3, 5, 2, -5, 2};
-    const auto        result = max_subarray_sum(arr);
-
-    std::cout << "Max subarray sum: " << result << '\n';
-}

@@ -26,35 +26,3 @@ void selection_sort(std::vector<T>& vec, Pred&& pred = Pred{})
         std::iter_swap(min_item, it);
     }
 }
-
-int main()
-{
-    namespace chr = std::chrono;
-
-    std::vector
-        vec{12345, 1, 123, 1234567, 12, 1234, 123456, 12345678, 123456789};
-
-    std::cout << "Before selection sort: ";
-    for (const auto& item : vec)
-    {
-        std::cout << item << ' ';
-    }
-
-    // Time the function.
-    const auto start = chr::steady_clock::now();
-    // Sort by length of the number.
-    selection_sort(vec,
-                   [](const int lhs, const int rhs) noexcept
-                   { return std::log10(lhs) < std::log10(rhs); });
-    const auto end = chr::steady_clock::now();
-
-    std::cout << "\nAfter selection sort: ";
-    for (const auto& item : vec)
-    {
-        std::cout << item << ' ';
-    }
-
-    // Print the elapsed time.
-    const chr::duration<double, std::nano> elapsed{end - start};
-    std::cout << "\nElapsed time: " << elapsed << '\n';
-}

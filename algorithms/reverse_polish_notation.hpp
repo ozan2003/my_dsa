@@ -95,15 +95,3 @@ double postfix_eval(const std::string& postfix)
     // The result is the only element left on the stack.
     return nums.empty() ? 0.0 : nums.top();
 }
-
-int main(int argc, char* argv[])
-{
-    if (argc == 2)
-    {
-        std::cout << postfix_eval(argv[1]) << '\n';
-    }
-    else
-    {
-        std::cerr << "No argument provided.\n";
-    }
-}

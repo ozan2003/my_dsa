@@ -129,15 +129,3 @@ std::string to_postfix(const std::string& infix)
 
     return postfix;
 }
-
-int main(int argc, char* argv[])
-{
-    if (argc == 2)
-    {
-        std::cout << to_postfix(argv[1]) << '\n';
-    }
-    else
-    {
-        std::cerr << "Enter an argument.\n";
-    }
-}

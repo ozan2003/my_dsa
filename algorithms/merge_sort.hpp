@@ -44,17 +44,3 @@ void merge_sort(const Iter& begin, const Iter& end, Pred&& pred = Pred{})
     rs::inplace_merge(left.begin(), mid, right.end(), pred);
 }
 
-int main()
-{
-    std::list nums{3, 1, 4, 1, 5, 9, 2, 6, 5, 3, 5};
-
-    merge_sort(nums.begin(),
-               nums.end(),
-               [](const int a, const int b) noexcept { return a < b; });
-
-    for (const auto& item : nums)
-    {
-        std::cout << item << ' ';
-    }
-    std::cout << '\n';
-}

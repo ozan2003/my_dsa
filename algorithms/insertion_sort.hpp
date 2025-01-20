@@ -46,14 +46,3 @@ void print(const std::vector<int>& vec)
     std::cout << '\n';
 }
 
-int main()
-{
-    std::vector<int> vec(10);
-    std::generate(vec.begin(), vec.end(), rnd);
-
-    std::cout << "Before sorting: ";
-    print(vec);
-    insertion_sort(vec, std::less_equal{});
-    std::cout << "After sorting:  ";
-    print(vec);
-}

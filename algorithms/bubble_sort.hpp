@@ -38,14 +38,3 @@ void bubble_sort(std::vector<T>& vec, Pred&& pred = Pred{})
         --end;
     }
 }
-
-int main()
-{
-    std::vector<int> vec{7, 5, 3, 5, 8, 6, 3, 1};
-    bubble_sort(vec, std::less_equal{});
-
-    for (const auto& elem : vec)
-    {
-        std::cout << elem << ' ';
-    }
-}

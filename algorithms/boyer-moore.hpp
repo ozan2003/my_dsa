@@ -48,17 +48,3 @@ constexpr std::optional<T> boyer_moore(const std::vector<T>& seq) noexcept
         return std::nullopt;
     }
 }
-
-int main()
-{
-    const std::vector seq{1, 2, 1, 3, 1, 4, 1, 5, 1, 1};
-
-    if (const std::optional result = boyer_moore(seq); result.has_value())
-    {
-        std::cout << "Majority element: " << result.value() << '\n';
-    }
-    else
-    {
-        std::cout << "No majority element found.\n";
-    }
-}

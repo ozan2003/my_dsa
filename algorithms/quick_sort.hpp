@@ -69,12 +69,3 @@ int partition(std::vector<T>& vec, const int low, const int high)
 
     return i; // The pivot index.
 }
-
-int main()
-{
-    std::vector vec{4, 2, 8, 3, 7, 0, 4};
-
-    fmt::println("Before sorting: {}", vec);
-    quick_sort(vec, 0, static_cast<int>(vec.size()) - 1);
-    fmt::println("After sorting: {}", vec);
-}
