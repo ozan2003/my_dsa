@@ -1,8 +1,6 @@
 #include <algorithm>
 #include <concepts>
-#include <iostream>
 #include <iterator>
-#include <list>
 #include <ranges>
 
 namespace rs = std::ranges;

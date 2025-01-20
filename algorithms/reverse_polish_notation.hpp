@@ -1,7 +1,6 @@
 #include <cctype>   // std::isdigit
 #include <cmath>    // std::pow
 #include <format>   // std::format
-#include <iostream> // std::cout, std::cerr
 #include <ranges>   // std::views::split, std::views::transform
 #include <stack>    // std::stack
 #include <string>   // std::string

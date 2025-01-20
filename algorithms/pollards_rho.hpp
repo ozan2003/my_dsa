@@ -1,6 +1,6 @@
 #include <bit>
 #include <cmath>
-#include <iostream>
+#include <cstdint>
 #include <map>
 #include <numeric>
 #include <string>
@@ -92,18 +92,4 @@ std::map<std::int64_t, std::size_t> pollards_rho(std::int64_t N)
         }
     }
     return factors;
-}
-
-int main(int argc, char* argv[])
-{
-    const auto arg     = argc == 2 ? std::stoll(argv[1]) : 0;
-    const auto factors = pollards_rho(arg);
-    /*for (const auto& factor : factors)
-    {
-        std::cout << factor << '\n';
-    }*/
-    for (const auto& [factor, freq] : factors)
-    {
-        std::cout << factor << ':' << freq << '\n';
-    }
 }

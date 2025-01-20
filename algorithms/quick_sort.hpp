@@ -1,5 +1,3 @@
-#include "fmt/ranges.h"
-
 #include <algorithm>
 #include <vector>
 #include <concepts>

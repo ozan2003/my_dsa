@@ -1,16 +1,6 @@
 #include <algorithm>
 #include <concepts>
-#include <iostream>
-#include <random>
 #include <vector>
-
-const auto seed = std::random_device{}();
-
-const auto rnd = [gen  = std::mt19937{seed},
-                  dist = std::uniform_int_distribution{0, 40}]() mutable -> int
-{
-    return dist(gen);
-};
 
 /**
  * Sorts the elements in-place using the insertion sort algorithm.
@@ -36,13 +26,3 @@ void insertion_sort(std::vector<T>& vec, Pred&& pred = Pred{})
         }
     }
 }
-
-void print(const std::vector<int>& vec)
-{
-    for (const auto& elem : vec)
-    {
-        std::cout << elem << ' ';
-    }
-    std::cout << '\n';
-}
-

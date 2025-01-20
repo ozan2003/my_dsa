@@ -1,8 +1,6 @@
 #include <algorithm> // std::min_element, std::iter_swap
-#include <chrono>    // std::chrono::steady_clock, std::chrono::duration
 #include <cmath>     // std::log10
 #include <concepts>  // std::totally_ordered, std::predicate
-#include <iostream>  // std::cout
 #include <vector>    // std::vector
 
 /**
