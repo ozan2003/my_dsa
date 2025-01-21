@@ -19,9 +19,8 @@ void insertion_sort(std::vector<T>& vec, Pred&& pred = Pred{})
         // Track our previous element in case we need to swap.
         for (auto prev = curr; prev != vec.begin(); --prev)
         {
-            // Move prev to the left until it's less than the element to its
-            // left.
-            if (*prev < *(prev - 1))
+            // Move prev to the left until it satisfies the predicate.
+            if (pred(*prev, *(prev - 1)))
             {
                 std::iter_swap(prev, prev - 1);
             }
