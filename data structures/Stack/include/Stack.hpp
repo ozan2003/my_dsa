@@ -36,11 +36,13 @@ private:
      */
     void resize()
     {
-        m_size *= RESIZE_FACTOR; // Increase the size.
-
         if (m_size == 0) // If the size is zero.
         {
             m_size = DEFAULT_SIZE; // Give it an initial size.
+        }
+        else
+        {
+            m_size *= RESIZE_FACTOR; // Increase the size.
         }
 
         // Create a new stack with the new size.
