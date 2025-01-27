@@ -121,11 +121,13 @@ public:
         return ForwardListIterator{m_tail->next};
     }
 
+    [[nodiscard]]
     std::size_t size() const override
     {
         return m_size;
     }
-
+    
+    [[nodiscard]]
     bool empty() const override
     {
         return size() == 0ull;
