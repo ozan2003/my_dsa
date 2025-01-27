@@ -665,7 +665,9 @@ template <typename T>
 Node<T>* AVLTree<T>::deep_copy(Node<T>* node)
 {
     if (node == nullptr)
+    {
         return nullptr;
+    }
 
     Node<T>* new_node    = new Node<T>{node->data};
     new_node->height     = node->height; // Copy height
