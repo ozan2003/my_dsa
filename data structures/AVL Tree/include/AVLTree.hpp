@@ -194,24 +194,6 @@ public:
     }
 
     /**
-     * Prints the elements of the AVL tree in ascending order.
-     *
-     * @param os The output stream to print the elements to. Default is
-     * std::cout.
-     */
-    void print(std::ostream& os = std::cout) const
-    {
-        if (m_root == nullptr)
-        {
-            return;
-        }
-        else
-        {
-            print_helper(m_root, os);
-        }
-    }
-
-    /**
      * Calculates the sum of all elements in the tree.
      *
      * @return The sum of all elements in the tree.
