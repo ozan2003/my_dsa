@@ -36,20 +36,15 @@ private:
      */
     void resize()
     {
-        if (m_size == 0) // If the size is zero.
-        {
-            m_size = DEFAULT_SIZE; // Give it an initial size.
-        }
-        else
-        {
-            m_size *= RESIZE_FACTOR; // Increase the size.
-        }
+        // Calculate new size. If current size is 0, use DEFAULT_SIZE, otherwise
+        // multiply by RESIZE_FACTOR
+        m_size = (m_size == 0) ? DEFAULT_SIZE : m_size * RESIZE_FACTOR;
 
         // Create a new stack with the new size.
         auto temp = std::make_unique<value_type[]>(m_size);
 
         // Move the items from the old stack to the new stack.
-        for (size_type i{}; i < m_size; ++i)
+        for (size_type i{}; i < m_top; ++i)
         {
             temp[i] = std::move(m_data[i]);
         }
