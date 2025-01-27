@@ -129,6 +129,7 @@ public:
      * @brief Returns the number of elements in the queue.
      * @return The number of elements in the queue.
      */
+    [[nodiscard]]
     size_type length() const noexcept
     {
         /*
@@ -208,6 +209,7 @@ public:
      * @brief Returns the capacity of the queue.
      * @return The capacity of the queue.
      */
+    [[nodiscard]]
     size_type capacity() const noexcept
     {
         return m_max_size - 1;
@@ -217,7 +219,8 @@ public:
      * @brief Returns true if the queue is empty.
      * @return True if the queue is empty.
      */
-    bool empty() const noexcept
+    [[nodiscard]]
+    bool is_empty() const noexcept
     {
         return length() == 0;
     }
