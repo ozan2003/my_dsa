@@ -188,6 +188,7 @@ public:
      *
      * @return The number of elements in the AVL tree.
      */
+    [[nodiscard]]
     int size() const
     {
         return m_count;
@@ -276,6 +277,7 @@ public:
     }
 
     // Verify size consistency
+    [[nodiscard]]
     bool verify_count() const
     {
         return m_count == count_nodes(m_root);

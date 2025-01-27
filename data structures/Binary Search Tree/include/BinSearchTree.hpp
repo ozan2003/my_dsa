@@ -122,6 +122,7 @@ public:
      *
      * @return The number of nodes.
      */
+    [[nodiscard]]
     int size() const
     {
         return m_count;
