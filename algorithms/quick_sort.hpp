@@ -5,9 +5,9 @@
 #include <vector>
 
 template <std::totally_ordered T>
-std::size_t partition(std::vector<T>&   vec,
-                      const std::size_t low,
-                      const std::size_t high);
+std::size_t partition_index(std::vector<T>&   vec,
+                            const std::size_t low,
+                            const std::size_t high);
 
 /**
  * Sort an array using the quicksort algorithm.
@@ -28,14 +28,16 @@ void quick_sort(std::vector<T>&   vec,
     }
 
     // Partition the vector into two parts.
-    const auto pivot = partition(vec, low, high);
+    const auto pivot = partition_index(vec, low, high);
 
-    quick_sort(vec, low, pivot - 1);  // Sort the left part.
-    quick_sort(vec, pivot + 1, high); // Sort the right part.
+    // Seperately sort elements before and after pivot.
+    quick_sort(vec, low, pivot - 1);
+    quick_sort(vec, pivot + 1, high);
 }
 
 /**
- * Partitions the given vector around a pivot element.
+ * Partitions the given sequence so that elements <= pivot are on the left side
+ * and elements > pivot are on the right side.
  *
  * @param vec The vector to be partitioned.
  * @param low The starting index of the partition.
@@ -43,14 +45,14 @@ void quick_sort(std::vector<T>&   vec,
  * @return The index of the pivot element after partitioning.
  */
 template <std::totally_ordered T>
-std::size_t partition(std::vector<T>&   vec,
-                      const std::size_t low,
-                      const std::size_t high)
+std::size_t partition_index(std::vector<T>&   vec,
+                            const std::size_t low,
+                            const std::size_t high)
 {
-    // Choose the last element as the pivot.
-    const auto pivot = vec[high];
+    // Pivot is usually chosen as the last element.
+    const T pivot = vec[high];
 
-    // Temporary pivot index.
+    // Pivot index.
     std::size_t i = low - 1;
 
     for (std::size_t j{low}; j < high; ++j)
@@ -67,5 +69,5 @@ std::size_t partition(std::vector<T>&   vec,
     ++i;
     std::swap(vec[i], vec[high]);
 
-    return i; // The pivot index.
+    return i;
 }
