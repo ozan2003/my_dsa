@@ -5,9 +5,9 @@
 #include <vector>
 
 template <std::totally_ordered T>
-std::size_t partition_index(std::vector<T>&   vec,
-                            const std::size_t low,
-                            const std::size_t high);
+int partition_index(std::vector<T>&   vec,
+                            const int low,
+                            const int high);
 
 /**
  * Sort an array using the quicksort algorithm.
@@ -18,8 +18,8 @@ std::size_t partition_index(std::vector<T>&   vec,
  */
 template <std::totally_ordered T>
 void quick_sort(std::vector<T>&   vec,
-                const std::size_t low,
-                const std::size_t high)
+                const int low,
+                const int high)
 {
     // Check the indices.
     if (low >= high)
@@ -45,17 +45,17 @@ void quick_sort(std::vector<T>&   vec,
  * @return The index of the pivot element after partitioning.
  */
 template <std::totally_ordered T>
-std::size_t partition_index(std::vector<T>&   vec,
-                            const std::size_t low,
-                            const std::size_t high)
+int partition_index(std::vector<T>&   vec,
+                            const int low,
+                            const int high)
 {
     // Pivot is usually chosen as the last element.
     const T pivot = vec[high];
 
     // Pivot index.
-    std::size_t i = low - 1;
+    int i = low - 1;
 
-    for (std::size_t j{low}; j < high; ++j)
+    for (int j{low}; j < high; ++j)
     {
         // If the current element is less than or equal to the pivot.
         if (vec[j] <= pivot)
