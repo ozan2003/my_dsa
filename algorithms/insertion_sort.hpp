@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <concepts>
+#include <utility>
 #include <vector>
 
 /**
@@ -12,6 +13,10 @@
 template <std::totally_ordered T, std::predicate<T, T> Pred = std::less<T>>
 void insertion_sort(std::vector<T>& vec, Pred&& pred = Pred{})
 {
+    // Create a forwarding reference to prevent repetitve forwarding in loop to
+    // reduce overhead.
+    auto&& predicate = std::forward<Pred>(pred);
+
     // Go left to right.
     for (auto curr = std::next(vec.begin()); curr != vec.end(); ++curr)
     {
@@ -20,7 +25,7 @@ void insertion_sort(std::vector<T>& vec, Pred&& pred = Pred{})
         for (auto prev = curr; prev != vec.begin(); --prev)
         {
             // Move prev to the left until it satisfies the predicate.
-            if (pred(*prev, *(prev - 1)))
+            if (predicate(*prev, *(prev - 1)))
             {
                 std::iter_swap(prev, prev - 1);
             }

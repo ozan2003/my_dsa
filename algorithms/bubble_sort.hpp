@@ -1,8 +1,9 @@
 #pragma once
 
 #include <algorithm>
-#include <vector>
 #include <concepts>
+#include <utility>
+#include <vector>
 
 /**
  * The bubble sort algorithm.
@@ -19,17 +20,21 @@ void bubble_sort(std::vector<T>& vec, Pred&& pred = Pred{})
 {
     // The last element will already be in the correct position.
     // - 1 for not getting segfault comparing one next item.
-    auto end = vec.end() - 1; 
+    auto end = vec.end() - 1;
+
+    // Make the predicate usable for move-only types.
+    auto&& predicate = std::forward<Pred>(pred);
 
     // The comparator fails when end is at the beginning of the vector
     // since there is no element in range [begin, end).
-    while (vec.begin() != end && !std::is_sorted(vec.begin(), vec.end(), pred))
+    while (vec.begin() != end &&
+           !std::is_sorted(vec.begin(), vec.end(), predicate))
     {
         // Starting from the beginning, compare every adjacent pair.
         for (auto beg = vec.begin(); beg != end; ++beg)
         {
             // Swap them if they are in the wrong order.
-            if (auto next = std::next(beg); !pred(*beg, *(next)))
+            if (auto next = std::next(beg); !predicate)
             {
                 std::iter_swap(beg, next);
             }

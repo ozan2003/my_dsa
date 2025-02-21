@@ -2,6 +2,7 @@
 
 #include <algorithm> // std::min_element, std::iter_swap
 #include <concepts>  // std::totally_ordered, std::predicate
+#include <utility>   // std::forward
 #include <vector>    // std::vector
 
 /**
@@ -19,7 +20,8 @@ void selection_sort(std::vector<T>& vec, Pred&& pred = Pred{})
     for (auto it = vec.begin(); it < vec.end() - 1; ++it)
     {
         // Find the smallest element in the range [it++, vec.end()).
-        auto min_item = std::min_element(it, vec.end(), pred);
+        auto min_item =
+            std::min_element(it, vec.end(), std::forward<Pred>(pred));
         // Swap the smallest element with the first element in the range [it++,
         // vec.end()) through iterators.
         std::iter_swap(min_item, it);
