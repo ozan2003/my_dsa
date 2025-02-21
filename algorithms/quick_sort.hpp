@@ -1,21 +1,25 @@
 #pragma once
 
 #include <algorithm>
-#include <vector>
 #include <concepts>
+#include <vector>
 
 template <std::totally_ordered T>
-int partition(std::vector<T>& vec, const int low, const int high);
+std::size_t partition(std::vector<T>&   vec,
+                      const std::size_t low,
+                      const std::size_t high);
 
 /**
- * Sorts a vector of integers using the quicksort algorithm.
+ * Sort an array using the quicksort algorithm.
  *
- * @param vec The vector to be sorted.
+ * @param vec The array to be sorted.
  * @param low The starting index of the range.
  * @param high The ending index of the range.
  */
 template <std::totally_ordered T>
-void quick_sort(std::vector<T>& vec, const int low, const int high)
+void quick_sort(std::vector<T>&   vec,
+                const std::size_t low,
+                const std::size_t high)
 {
     // Check the indices.
     if (low >= high)
@@ -39,15 +43,17 @@ void quick_sort(std::vector<T>& vec, const int low, const int high)
  * @return The index of the pivot element after partitioning.
  */
 template <std::totally_ordered T>
-int partition(std::vector<T>& vec, const int low, const int high)
+std::size_t partition(std::vector<T>&   vec,
+                      const std::size_t low,
+                      const std::size_t high)
 {
     // Choose the last element as the pivot.
     const auto pivot = vec[high];
 
     // Temporary pivot index.
-    int i = low - 1;
+    std::size_t i = low - 1;
 
-    for (int j{low}; j < high; ++j)
+    for (std::size_t j{low}; j < high; ++j)
     {
         // If the current element is less than or equal to the pivot.
         if (vec[j] <= pivot)
@@ -56,7 +62,8 @@ int partition(std::vector<T>& vec, const int low, const int high)
             std::swap(vec[i], vec[j]); // Swap the elements.
         }
     }
-    // Move the pivot element to the correct position (between the smaller and the larger elements).
+    // Move the pivot element to the correct position (between the smaller and
+    // the larger elements).
     ++i;
     std::swap(vec[i], vec[high]);
 
