@@ -49,7 +49,7 @@ template <Comparable T>
 int partition(std::vector<T>& vec, const int low, const int high)
 {
     // Choose the last element as the pivot.
-    const int pivot = vec[high];
+    const auto pivot = vec[high];
 
     // Temporary pivot index.
     int i = low - 1;
