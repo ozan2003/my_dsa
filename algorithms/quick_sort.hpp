@@ -4,14 +4,7 @@
 #include <vector>
 #include <concepts>
 
-template <typename T>
-concept Comparable = requires(T a, T b) {
-    {
-        a < b
-    } -> std::convertible_to<bool>;
-};
-
-template <Comparable T>
+template <std::totally_ordered T>
 int partition(std::vector<T>& vec, const int low, const int high);
 
 /**
@@ -21,7 +14,7 @@ int partition(std::vector<T>& vec, const int low, const int high);
  * @param low The starting index of the range.
  * @param high The ending index of the range.
  */
-template <Comparable T>
+template <std::totally_ordered T>
 void quick_sort(std::vector<T>& vec, const int low, const int high)
 {
     // Check the indices.
@@ -45,7 +38,7 @@ void quick_sort(std::vector<T>& vec, const int low, const int high)
  * @param high The ending index of the partition.
  * @return The index of the pivot element after partitioning.
  */
-template <Comparable T>
+template <std::totally_ordered T>
 int partition(std::vector<T>& vec, const int low, const int high)
 {
     // Choose the last element as the pivot.
