@@ -1,51 +1,55 @@
 #pragma once
 
-#include <algorithm>
 #include <concepts>
 #include <optional>
 #include <vector>
 
-// Implementation of the Boyer-Moore majority vote algorithm.
-// https://en.wikipedia.org/wiki/Boyer%E2%80%93Moore_majority_vote_algorithm
-//
-// Returns an arbitrary majority element if it exists, otherwise returns
-// std::nullopt.
-//
-// Given an sequence of `n` elements, the majority element is the element that
-// occurs more than `n/2` times.
+/**
+ * @brief Find the majority element in a sequence using Boyer-Moore majority
+vote algorithm. [1]
+ * [1]:
+https://en.wikipedia.org/wiki/Boyer%E2%80%93Moore_majority_vote_algorithm
+ * @param seq The sequence of elements.
+ * @return Returns an arbitrary majority element if it exists, otherwise returns
+std::nullopt.
+ */
 template <typename T>
     requires std::equality_comparable<T> && std::assignable_from<T&, T> &&
              std::default_initializable<T>
 constexpr std::optional<T> boyer_moore(const std::vector<T>& seq) noexcept
 {
-    std::size_t counter{};
-    T           curr_candidate{}; // Remembered item.
+    T curr_candidate{}; // Remembered item.
 
-    for (const T& x : seq)
+    // First pass: Find the majority candidate.
+    for (std::size_t tally{}; const T& x : seq)
     {
-        if (counter == 0)
+        if (tally == 0)
         {
             curr_candidate = x;
-            counter        = 1;
+            tally          = 1;
         }
         else if (curr_candidate == x)
         {
-            ++counter;
+            ++tally;
         }
         else
         {
-            --counter;
+            --tally;
         }
     }
 
-    // Second pass to validate the majority item.
-    counter = std::ranges::count(seq, curr_candidate);
-    if (counter > seq.size() / 2)
+    // Second pass: Verify if the candidate is indeed the majority element.
+    for (std::size_t majority_count{}; const T& x : seq)
     {
-        return curr_candidate;
+        if (x == curr_candidate)
+        {
+            ++majority_count;
+            if (majority_count > seq.size() / 2)
+            {
+                return curr_candidate;
+            }
+        }
     }
-    else
-    {
-        return std::nullopt;
-    }
+
+    return std::nullopt;
 }
