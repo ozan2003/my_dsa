@@ -34,7 +34,7 @@ void bubble_sort(std::vector<T>& vec, Pred&& pred = Pred{})
         for (auto beg = vec.begin(); beg != end; ++beg)
         {
             // Swap them if they are in the wrong order.
-            if (auto next = std::next(beg); !predicate)
+            if (auto next = std::next(beg); !predicate(*beg, *next))
             {
                 std::iter_swap(beg, next);
             }
