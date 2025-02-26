@@ -19,7 +19,6 @@ template <typename T, typename Pred = std::less<T>>
 void bubble_sort(std::vector<T>& vec, Pred&& pred = Pred{})
 {
     // The last element will already be in the correct position.
-    // - 1 for not getting segfault comparing one next item.
     auto end = vec.end() - 1;
 
     // Make the predicate usable for move-only types.
@@ -27,8 +26,7 @@ void bubble_sort(std::vector<T>& vec, Pred&& pred = Pred{})
 
     // The comparator fails when end is at the beginning of the vector
     // since there is no element in range [begin, end).
-    while (vec.begin() != end &&
-           !std::is_sorted(vec.begin(), vec.end(), predicate))
+    while (vec.begin() != end)
     {
         // Starting from the beginning, compare every adjacent pair.
         for (auto beg = vec.begin(); beg != end; ++beg)
