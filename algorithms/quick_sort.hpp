@@ -53,8 +53,10 @@ void quick_sort(R& seq)
 /**
  * Partitions the given sequence so that elements <= pivot are on the left side
  * and elements > pivot are on the right side.
+ * 
+ * This function uses the Lomuto partition scheme.
  *
- * @param seq The vector to be partitioned.
+ * @param seq The range to be partitioned.
  * @param low The starting index of the partition.
  * @param high The ending index of the partition.
  * @return The index of the pivot element.
