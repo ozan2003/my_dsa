@@ -5,7 +5,7 @@
 #include <vector>
 
 template <std::totally_ordered T>
-int partition_index(std::vector<T>& vec, const int low, const int high);
+int partition_index(std::vector<T>& vec, int low, const int high);
 
 /**
  * Sort an array using the quicksort algorithm.
@@ -24,11 +24,11 @@ void quick_sort(std::vector<T>& vec, const int low, const int high)
     }
 
     // Partition the vector into two parts.
-    const auto pivot = partition_index(vec, low, high);
+    const int pivot_index = partition_index(vec, low, high);
 
-    // Seperately sort elements before and after pivot.
-    quick_sort(vec, low, pivot - 1);
-    quick_sort(vec, pivot + 1, high);
+    // Seperately sort both parts.
+    quick_sort(vec, low, pivot_index - 1);
+    quick_sort(vec, pivot_index + 1, high);
 }
 
 /**
@@ -38,30 +38,28 @@ void quick_sort(std::vector<T>& vec, const int low, const int high)
  * @param vec The vector to be partitioned.
  * @param low The starting index of the partition.
  * @param high The ending index of the partition.
- * @return The index of the pivot element after partitioning.
+ * @return The index of the pivot element.
  */
 template <std::totally_ordered T>
-int partition_index(std::vector<T>& vec, const int low, const int high)
+int partition_index(std::vector<T>& vec, int low, const int high)
 {
+    // Using Lomuto partition scheme.
     // Pivot is usually chosen as the last element.
-    const T pivot = vec[high];
+    T& pivot = vec[high];
 
     // Pivot index.
-    int i = low - 1;
+    int boundary = low - 1;
 
-    for (int j{low}; j < high; ++j)
+    for (; low < high; ++low)
     {
-        // If the current element is less than or equal to the pivot.
-        if (vec[j] <= pivot)
+        // Move elements <= pivot to the left side.
+        if (vec[low] <= pivot)
         {
-            ++i;
-            std::swap(vec[i], vec[j]); // Swap the elements.
+            ++boundary; // Expand the boundary.
+            std::swap(vec[boundary], vec[low]);
         }
     }
-    // Move the pivot element to the correct position (between the smaller and
-    // the larger elements).
-    ++i;
-    std::swap(vec[i], vec[high]);
-
-    return i;
+    // Place the pivot between two partitions.
+    std::swap(vec[boundary + 1], pivot);
+    return boundary + 1;
 }
