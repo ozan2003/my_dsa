@@ -2,7 +2,7 @@
 
 #include <algorithm>
 #include <concepts>
-#include <vector>
+#include <ranges>
 
 template <std::ranges::random_access_range R,
           typename T = std::ranges::range_value_t<R>>
