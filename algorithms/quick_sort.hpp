@@ -32,6 +32,21 @@ void quick_sort(std::vector<T>& vec, const int low, const int high)
 }
 
 /**
+ * Sort an range using the quicksort algorithm.
+ *
+ * @param vec The range to be sorted.
+ */
+// A convenient overload for the whole range.
+template <std::ranges::random_access_range R>
+void quick_sort(R& seq)
+{
+    if (!std::ranges::empty(seq))
+    {
+        quick_sort(seq, 0, static_cast<int>(std::size(seq) - 1));
+    }
+}
+
+/**
  * Partitions the given sequence so that elements <= pivot are on the left side
  * and elements > pivot are on the right side.
  *
