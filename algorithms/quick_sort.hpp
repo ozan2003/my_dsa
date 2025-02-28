@@ -65,7 +65,7 @@ int partition_index(R& seq, int low, const int high)
 {
     // Using Lomuto partition scheme.
     // Pivot is usually chosen as the last element.
-    T pivot = seq[high];
+    T& pivot = seq[high];
 
     // Pivot index.
     int boundary = low - 1;
