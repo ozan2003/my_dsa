@@ -1,17 +1,19 @@
 #pragma once
 
+#include <algorithm>
 #include <limits>
+#include <ranges>
 #include <type_traits>
-#include <vector>
 
 // Kadane's algorithm.
-template <typename T>
-    requires std::is_arithmetic_v<T> || std::is_floating_point_v<T>
-T max_subarray_sum(const std::vector<T>& arr)
+template <std::ranges::range R, typename T = std::ranges::range_value_t<R>>
+    requires std::is_arithmetic_v<T>
+T max_subarray_sum(R&& rng) // Use universal reference for std::ranges::range's
+                            // incompatible with const, like std::views::filter.
 {
-    auto best_sum = std::numeric_limits<T>::min();
+    T best_sum = std::numeric_limits<T>::min();
 
-    for (T current_sum{}; const auto& value : arr)
+    for (T current_sum{}; const auto& value : rng)
     {
         // Accumulate the numbers.
         current_sum = std::max(value, current_sum + value);
