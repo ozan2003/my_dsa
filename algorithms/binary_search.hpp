@@ -9,7 +9,7 @@
  * @param target The number to be searched on range.
  * @return The iterator to the found element, one past the end if not found.
  */
-template <std::ranges::range Rng>
+template <std::ranges::random_access_range Rng>
 std::ranges::const_iterator_t<Rng> bin_search(
     const Rng&                             rng,
     const std::ranges::range_value_t<Rng>& target)
