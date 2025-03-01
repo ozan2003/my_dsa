@@ -124,8 +124,8 @@ void quick_sort(R&                    seq,
     // Partition the range into two parts.
     // const int pivot_index = partition_index_hoare(seq, low, high);
     const int pivot_index = (partition == impl::Partition::Lomuto)
-                                ? partition_index_lomuto(seq, low, high)
-                                : partition_index_hoare(seq, low, high);
+                                ? impl::partition_index_lomuto(seq, low, high)
+                                : impl::partition_index_hoare(seq, low, high);
 
     // Seperately sort both parts.
     quick_sort(seq, low, pivot_index);
