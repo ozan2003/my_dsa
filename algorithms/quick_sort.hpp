@@ -127,21 +127,28 @@ int partition_index_hoare(R& seq, const int low, const int high)
 
     while (true)
     {
+        // Find the first element >= pivot from the left.
         do
         {
             ++lower_boundary;
         } while (seq[lower_boundary] < pivot);
 
+        // Find the first element <= pivot from the right.
         do
         {
             --higher_boundary;
         } while (seq[higher_boundary] > pivot);
 
+        // If the boundaries meet, return higher_boundary as
+        // the index of the pivot-value element or
+        // the index of the closest lower than the pivot element.
         if (lower_boundary >= higher_boundary)
         {
             return higher_boundary;
         }
-
-        std::swap(seq[lower_boundary], seq[higher_boundary]);
+        else
+        {
+            std::swap(seq[lower_boundary], seq[higher_boundary]);
+        }
     }
 }
