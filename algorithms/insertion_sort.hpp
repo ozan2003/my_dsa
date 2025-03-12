@@ -25,9 +25,9 @@ void insertion_sort(std::vector<T>& vec, Pred&& pred = Pred{})
         for (auto prev = curr; prev != vec.begin(); --prev)
         {
             // Move prev to the left until it satisfies the predicate.
-            if (predicate(*prev, *(prev - 1)))
+            if (predicate(*prev, *std::prev(prev)))
             {
-                std::iter_swap(prev, prev - 1);
+                std::iter_swap(prev, std::prev(prev));
             }
         }
     }
