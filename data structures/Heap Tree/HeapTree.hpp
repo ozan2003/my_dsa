@@ -219,10 +219,12 @@ public:
         m_data[0] = item; // Sentinel for the loop termination check
 
         // Traverse up the tree until the item is not smaller than its parent.
-        for (; item < m_data[hole / 2]; hole /= 2)
+        while (item < m_data[hole / 2])
         {
             // Move the parent down.
             m_data[hole] = std::move(m_data[hole / 2]);
+
+            hole /= 2; // Move to the parent.
         }
 
         m_data[hole] = item; // Place the item into the final hole position.
