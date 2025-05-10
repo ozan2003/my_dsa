@@ -39,6 +39,42 @@ private:
     std::vector<value_type> m_data;   // The array that stores the items.
 
     /**
+     * @brief Returns the parent of the given index.
+     *
+     * @param i The index of the element.
+     * @return The parent of the given index.
+     */
+    [[nodiscard]]
+    constexpr size_type parent(const size_type i) const noexcept
+    {
+        return i / 2;
+    }
+
+    /**
+     * @brief Returns the left child of the given index.
+     *
+     * @param i The index of the element.
+     * @return The left child of the given index.
+     */
+    [[nodiscard]]
+    constexpr size_type left(const size_type i) const noexcept
+    {
+        return 2 * i;
+    }
+
+    /**
+     * @brief Returns the right child of the given index.
+     *
+     * @param i The index of the element.
+     * @return The right child of the given index.
+     */
+    [[nodiscard]]
+    constexpr size_type right(const size_type i) const noexcept
+    {
+        return 2 * i + 1;
+    }
+
+    /**
      * @brief Builds the heap by percolating down the parent nodes.
      *
      * This function starts from the last parent node and percolates down each
@@ -68,13 +104,13 @@ private:
         value_type tmp = std::move(m_data[hole]);
 
         // Percolate down the hole.
-        while (hole * 2 <= m_size)
+        while (left(hole) <= m_size)
         {
-            child = hole * 2; // The index of the left child.
+            child = left(hole); // The index of the left child.
 
             // If the left child is not the last element and the right child is
             // smaller than the left child, then use the right child.
-            if (child < m_size && (m_data[child + 1] < m_data[child]))
+            if (child < m_size && (m_data[right(hole)] < m_data[child]))
             {
                 ++child;
             }
@@ -219,12 +255,12 @@ public:
         m_data[0] = item; // Sentinel for the loop termination check
 
         // Traverse up the tree until the item is not smaller than its parent.
-        while (item < m_data[hole / 2])
+        while (item < m_data[parent(hole)])
         {
             // Move the parent down.
-            m_data[hole] = std::move(m_data[hole / 2]);
+            m_data[hole] = std::move(m_data[parent(hole)]);
 
-            hole /= 2; // Move to the parent.
+            hole = parent(hole); // Move to the parent.
         }
 
         m_data[hole] = item; // Place the item into the final hole position.
