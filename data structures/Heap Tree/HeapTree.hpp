@@ -50,7 +50,7 @@ private:
     void build_heap() noexcept
     {
         // Start from the last parent.
-        for (size_type i{m_size / 2}; 0 < i; --i)
+        for (size_type i{parent(m_size)}; i > 0; --i)
         {
             percolate_down(i); // Percolate down the parent.
         }
