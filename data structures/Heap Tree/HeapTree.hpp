@@ -16,15 +16,23 @@
  * 4. The last parent is at index n / 2.
  */
 
-constexpr int INITIAL_CAPACITY{10}; // The initial capacity of the array.
+constexpr std::size_t INITIAL_CAPACITY{10}; // The initial capacity of the array.
 
 // Implemented as a min-heap.
 template <typename T>
 class HeapTree
 {
+public:
+    using value_type = T;
+    using size_type = std::size_t;
+    using reference = T&;
+    using const_reference = const T&;
+    using pointer = T*;
+    using const_pointer = const T*;
+    
 private:
-    int            m_size; // The number of items in the heap.
-    std::vector<T> m_data; // The array that stores the items.
+    size_type m_size; // The number of items in the heap.
+    std::vector<value_type> m_data; // The array that stores the items.
 
     /**
      * @brief Builds the heap by percolating down the parent nodes.
@@ -40,7 +48,7 @@ private:
     void build_heap() noexcept
     {
         // Start from the last parent.
-        for (int i{m_size / 2}; 0 < i; --i)
+        for (size_type i{m_size / 2}; 0 < i; --i)
         {
             percolate_down(i); // Percolate down the parent.
         }
@@ -51,11 +59,11 @@ private:
      *
      * @param hole The index of the hole to percolate down from.
      */
-    void percolate_down(int hole) noexcept
+    void percolate_down(size_type hole) noexcept
     {
-        int child{}; // The index of the child of the hole.
+        size_type child{}; // The index of the child of the hole.
         // The item that will be percolated down.
-        T tmp = std::move(m_data[hole]);
+        value_type tmp = std::move(m_data[hole]);
 
         // Percolate down the hole.
         for (; hole * 2 < m_size; hole = child)
@@ -85,14 +93,14 @@ private:
 
 public:
     // "explicit", prevents implicit conversion such as char to integer.
-    explicit HeapTree(const int capacity = INITIAL_CAPACITY)
+    explicit HeapTree(const size_type capacity = INITIAL_CAPACITY)
         : m_size{}, m_data(capacity)
     {
     }
 
     // Construct the heap tree given a vector of items.
-    explicit HeapTree(const std::vector<T>& items)
-        : m_size{static_cast<int>(items.size())}, m_data(items.size() + 1)
+    explicit HeapTree(const std::vector<value_type>& items)
+        : m_size{items.size()}, m_data(items.size() + 1)
     {
         for (std::size_t i{}; i < items.size(); ++i)
         {
@@ -103,8 +111,8 @@ public:
     }
 
     // Construct the heap tree given an initializer list of items.
-    explicit HeapTree(std::initializer_list<T> items)
-        : m_size{static_cast<int>(items.size())}, m_data(items.size() + 1)
+    explicit HeapTree(std::initializer_list<value_type> items)
+        : m_size{items.size()}, m_data(items.size() + 1)
     {
         for (std::size_t index{}; const auto& item : items)
         {
@@ -121,10 +129,10 @@ public:
      * @param items The array of items.
      */
     template <std::size_t N>
-    explicit HeapTree(const std::array<T, N>& items)
-        : m_size{static_cast<int>(items.size())}, m_data(items.size() + 1)
+    explicit HeapTree(const std::array<value_type, N>& items)
+        : m_size{items.size()}, m_data(items.size() + 1)
     {
-        int index{};
+        size_type index{};
         for (const auto& item : items)
         {
             m_data[++index] = item; // Discard 0th element.
@@ -150,7 +158,7 @@ public:
      * @return T& A reference to the minimum element.
      * @throws std::out_of_range If the heap is empty.
      */
-    const T& find_min() const
+    const_reference find_min() const
     {
         if (empty())
         {
@@ -166,7 +174,7 @@ public:
      *
      * @param item The item to be inserted.
      */
-    void insert(const T& item) noexcept
+    void insert(const_reference item) noexcept
     {
         // Double the size of the array if necessary.
         if (m_size == m_data.size() - 1)
@@ -175,7 +183,7 @@ public:
         }
 
         // Insert a new item to the end of the array.
-        int hole = ++m_size;
+        size_type hole = ++m_size;
 
         // Traverse up the tree until the item is not smaller than its parent.
         // Move the hole up until the item is not smaller than its parent.
@@ -211,9 +219,9 @@ public:
         m_size = 0; // Simply ignore the items.
     }
 
-    friend std::ostream& operator<<(std::ostream& out, const HeapTree<T>& heap)
+    friend std::ostream& operator<<(std::ostream& out, const HeapTree<value_type>& heap)
     {
-        for (int i{1}; i <= heap.m_size; ++i)
+        for (size_type i{1}; i <= heap.m_size; ++i)
         {
             out << heap.m_data[i] << ' ';
         }
