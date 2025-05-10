@@ -69,7 +69,7 @@ namespace
     {
         // The value being percolated down
         T           percolating_value = std::move(items[hole]);
-        std::size_t child;
+        std::size_t child{};
 
         // Percolate down the hole
         while (left(hole) < end)
