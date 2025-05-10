@@ -179,13 +179,13 @@ public:
     }
 
     /**
-     * @brief Returns a reference to the minimum element in the heap.
+     * @brief Returns the minimum element in the heap.
      *
-     * @return A reference to the minimum element.
+     * @return The minimum element.
      * @throws std::out_of_range If the heap is empty.
      */
     [[nodiscard]]
-    const_reference find_min() const
+    value_type find_min() const
     {
         if (is_empty())
         {
