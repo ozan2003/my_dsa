@@ -1,9 +1,9 @@
 #ifndef HEAPTREE_HPP
 #define HEAPTREE_HPP
 
-#include <array>            // std::array
 #include <initializer_list> // std::initializer_list
 #include <iostream>         // operator<<
+#include <ranges>           // std::ranges::range
 #include <stdexcept>        // std::out_of_range
 #include <utility>          // std::move
 #include <vector>           // std::vector
@@ -143,22 +143,6 @@ public:
     }
 
     /**
-     * @brief Constructs a heap from a vector of items.
-     *
-     * @param items Vector of items to build the heap from.
-     */
-    explicit HeapTree(const std::vector<value_type>& items)
-        : m_size{items.size()}, m_data(items.size() + 1)
-    {
-        for (std::size_t i{}; i < items.size(); ++i)
-        {
-            m_data[i + 1] = items[i];
-        }
-
-        build_heap(); // Establish heap order property.
-    }
-
-    /**
      * @brief Constructs a heap from an initializer list of items.
      *
      * @param items Initializer list of items to build the heap from.
@@ -176,21 +160,18 @@ public:
     }
 
     /**
-     * @brief Constructs a heap from an array of items.
+     * @brief Constructs a heap from a range of items.
      *
-     * @tparam N The size of the array.
-     * @param items The array of items.
+     * @param items Range of items to build the heap from.
      */
-    template <std::size_t N>
-    explicit HeapTree(const std::array<value_type, N>& items)
+    // clang-format off
+    template <std::ranges::range R>
+        requires std::ranges::range_value_t<R> == value_type
+    // clang-format on
+    HeapTree(R&& items)
         : m_size{items.size()}, m_data(items.size() + 1)
     {
-        size_type index{};
-        for (const auto& item : items)
-        {
-            m_data[++index] = item; // Discard 0th element.
-        }
-
+        std::ranges::copy(items, m_data.begin() + 1);
         build_heap(); // Establish heap order property.
     }
 
