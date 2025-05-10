@@ -16,23 +16,27 @@
  * 4. The last parent is at index n / 2.
  */
 
-constexpr std::size_t INITIAL_CAPACITY{10}; // The initial capacity of the array.
+namespace
+{
+    // The initial capacity of the array.
+    constexpr std::size_t INITIAL_CAPACITY{10};
+} // namespace
 
 // Implemented as a min-heap.
 template <typename T>
 class HeapTree
 {
 public:
-    using value_type = T;
-    using size_type = std::size_t;
-    using reference = T&;
+    using value_type      = T;
+    using size_type       = std::size_t;
+    using reference       = T&;
     using const_reference = const T&;
-    using pointer = T*;
-    using const_pointer = const T*;
-    
+    using pointer         = T*;
+    using const_pointer   = const T*;
+
 private:
-    size_type m_size; // The number of items in the heap.
-    std::vector<value_type> m_data; // The array that stores the items.
+    size_type               m_size{}; // The number of items in the heap.
+    std::vector<value_type> m_data;   // The array that stores the items.
 
     /**
      * @brief Builds the heap by percolating down the parent nodes.
@@ -42,8 +46,6 @@ private:
      *
      * @note This function assumes that the heap is already initialized with
      * elements.
-     *
-     * @tparam T The type of elements in the heap.
      */
     void build_heap() noexcept
     {
@@ -55,7 +57,7 @@ private:
     }
 
     /**
-     * Percolates down the heap from the given hole index.
+     * @brief Percolates down the heap from the given hole index.
      *
      * @param hole The index of the hole to percolate down from.
      */
@@ -66,13 +68,13 @@ private:
         value_type tmp = std::move(m_data[hole]);
 
         // Percolate down the hole.
-        for (; hole * 2 < m_size; hole = child)
+        for (; hole * 2 <= m_size; hole = child)
         {
             child = hole * 2; // The index of the left child.
 
             // If the left child is not the last element and the right child is
             // smaller than the left child, then use the right child.
-            if (child != m_size && (m_data[child + 1] < m_data[child]))
+            if (child < m_size && (m_data[child + 1] < m_data[child]))
             {
                 ++child;
             }
@@ -92,13 +94,21 @@ private:
     }
 
 public:
-    // "explicit", prevents implicit conversion such as char to integer.
+    /**
+     * @brief Constructs an empty heap with the given initial capacity.
+     *
+     * @param capacity The initial capacity of the heap.
+     */
     explicit HeapTree(const size_type capacity = INITIAL_CAPACITY)
-        : m_size{}, m_data(capacity)
+        : m_size{}, m_data(capacity + 1) // +1 to accommodate 1-based indexing
     {
     }
 
-    // Construct the heap tree given a vector of items.
+    /**
+     * @brief Constructs a heap from a vector of items.
+     *
+     * @param items Vector of items to build the heap from.
+     */
     explicit HeapTree(const std::vector<value_type>& items)
         : m_size{items.size()}, m_data(items.size() + 1)
     {
@@ -110,11 +120,16 @@ public:
         build_heap(); // Establish heap order property.
     }
 
-    // Construct the heap tree given an initializer list of items.
+    /**
+     * @brief Constructs a heap from an initializer list of items.
+     *
+     * @param items Initializer list of items to build the heap from.
+     */
     explicit HeapTree(std::initializer_list<value_type> items)
         : m_size{items.size()}, m_data(items.size() + 1)
     {
-        for (std::size_t index{}; const auto& item : items)
+        std::size_t index{};
+        for (const auto& item : items)
         {
             m_data[++index] = item; // Discard 0th element.
         }
@@ -123,7 +138,7 @@ public:
     }
 
     /**
-     * @brief Constructs a HeapTree object from an array of items.
+     * @brief Constructs a heap from an array of items.
      *
      * @tparam N The size of the array.
      * @param items The array of items.
@@ -146,21 +161,33 @@ public:
      *
      * @return true if the heap tree is empty, false otherwise.
      */
-    bool empty() const noexcept
+    [[nodiscard]]
+    bool is_empty() const noexcept
     {
         return m_size == 0;
     }
 
     /**
+     * @brief Returns the number of elements in the heap.
+     *
+     * @return Number of elements in the heap.
+     */
+    [[nodiscard]]
+    size_type size() const noexcept
+    {
+        return m_size;
+    }
+
+    /**
      * @brief Returns a reference to the minimum element in the heap.
      *
-     * @tparam T The type of elements stored in the heap.
-     * @return T& A reference to the minimum element.
+     * @return A reference to the minimum element.
      * @throws std::out_of_range If the heap is empty.
      */
+    [[nodiscard]]
     const_reference find_min() const
     {
-        if (empty())
+        if (is_empty())
         {
             throw std::out_of_range("Heap underflow.");
         }
@@ -170,11 +197,11 @@ public:
     }
 
     /**
-     * Inserts an item into the heap tree.
+     * @brief Inserts an item into the heap tree.
      *
      * @param item The item to be inserted.
      */
-    void insert(const_reference item) noexcept
+    void insert(const_reference item)
     {
         // Double the size of the array if necessary.
         if (m_size == m_data.size() - 1)
@@ -185,41 +212,53 @@ public:
         // Insert a new item to the end of the array.
         size_type hole = ++m_size;
 
+        // Percolate up: Move the hole up until the item is in the correct
+        // position
+        m_data[0] = item; // Sentinel for the loop termination check
+
         // Traverse up the tree until the item is not smaller than its parent.
-        // Move the hole up until the item is not smaller than its parent.
         for (; item < m_data[hole / 2]; hole /= 2)
         {
             // Move the parent down.
             m_data[hole] = std::move(m_data[hole / 2]);
         }
 
-        m_data[hole] = std::move(item); // Move the item into the hole.
+        m_data[hole] = item; // Place the item into the final hole position.
     }
 
     /**
-     * Removes the minimum element from the heap.
+     * @brief Removes the minimum element from the heap.
      * @throws std::out_of_range exception if the heap is empty.
      */
     void remove_min()
     {
-        if (empty())
+        if (is_empty())
         {
             throw std::out_of_range("Heap underflow.");
         }
 
-        // The minimum element can be found at the root, which is the first
-        // element of the array.
-        m_data[1] =
-            std::move(m_data[m_size--]); // Move the last item to the root.
-        percolate_down(1);               // Percolate down the root.
+        // Move the last item to the root and reduce size
+        m_data[1] = std::move(m_data[m_size--]);
+        percolate_down(1); // Percolate down the root.
     }
 
+    /**
+     * @brief Empties the heap.
+     */
     void make_empty() noexcept
     {
         m_size = 0; // Simply ignore the items.
     }
 
-    friend std::ostream& operator<<(std::ostream& out, const HeapTree<value_type>& heap)
+    /**
+     * @brief Outputs the heap elements to a stream.
+     *
+     * @param out The output stream.
+     * @param heap The heap to output.
+     * @return The output stream.
+     */
+    friend std::ostream& operator<<(std::ostream&               out,
+                                    const HeapTree<value_type>& heap)
     {
         for (size_type i{1}; i <= heap.m_size; ++i)
         {
