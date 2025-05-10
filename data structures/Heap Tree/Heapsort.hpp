@@ -111,8 +111,15 @@ namespace
     void build_heap(std::vector<T>& items) noexcept
     {
         const std::size_t size = items.size();
+
+        // Handle empty vector case
+        if (size == 0)
+        {
+            return;
+        }
+
         // Start from the last parent
-        for (std::size_t i{parent(size - 1)}; i > 0; --i)
+        for (int i = static_cast<int>(parent(size - 1)); i >= 0; --i)
         {
             percolate_down(items, i, size);
         }
