@@ -68,7 +68,7 @@ private:
         value_type tmp = std::move(m_data[hole]);
 
         // Percolate down the hole.
-        for (; hole * 2 <= m_size; hole = child)
+        while (hole * 2 <= m_size)
         {
             child = hole * 2; // The index of the left child.
 
@@ -89,6 +89,8 @@ private:
             {
                 break;
             }
+
+            hole = child; // Move to the child.
         }
         m_data[hole] = std::move(tmp); // Move the item into the hole.
     }
