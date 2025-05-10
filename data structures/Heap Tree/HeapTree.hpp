@@ -80,8 +80,7 @@ private:
      * This function starts from the last parent node and percolates down each
      * parent node to maintain the heap property.
      *
-     * @note This function assumes that the heap is already initialized with
-     * elements.
+     * @note This function assumes that the heap is already initialized.
      */
     void build_heap() noexcept
     {
@@ -93,31 +92,34 @@ private:
     }
 
     /**
-     * @brief Percolates down the heap from the given hole index.
+     * @brief Moves down the item at the given hole index until the heap
+     * property is restored.
      *
      * @param hole The index of the hole to percolate down from.
+     *
+     * @note Also called "sift down" and "bubble down".
      */
     void percolate_down(size_type hole) noexcept
     {
         size_type child{}; // The index of the child of the hole.
         // The item that will be percolated down.
-        value_type tmp = std::move(m_data[hole]);
+        value_type percolating_value = std::move(m_data[hole]);
 
         // Percolate down the hole.
         while (left(hole) <= m_size)
         {
             child = left(hole); // The index of the left child.
 
-            // If the left child is not the last element and the right child is
-            // smaller than the left child, then use the right child.
+            // If the right child exists and is smaller than the left child,
+            // then use the right child.
             if (child < m_size && (m_data[right(hole)] < m_data[child]))
             {
-                ++child;
+                child = right(hole);
             }
 
             // If the child is smaller than the item that is percolated down,
             // then move the child up.
-            if (m_data[child] < tmp)
+            if (m_data[child] < percolating_value)
             {
                 m_data[hole] = std::move(m_data[child]);
             }
@@ -128,7 +130,8 @@ private:
 
             hole = child; // Move to the child.
         }
-        m_data[hole] = std::move(tmp); // Move the item into the hole.
+        // Move the item into the hole.
+        m_data[hole] = std::move(percolating_value);
     }
 
 public:
