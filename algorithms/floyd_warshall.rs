@@ -64,15 +64,18 @@ mod algorithm
     /// A graph represented as an adjacency matrix.
     pub type Graph<const N: usize> = [[Distance; N]; N];
 
-    /// Computes the shortest paths between all pairs of vertices in a directed graph using the Floyd-Warshall algorithm[1].
-    /// 
+    /// Computes the shortest paths between all pairs of vertices in a directed
+    /// graph using the Floyd-Warshall algorithm[1].
+    ///
     /// [1]: https://en.wikipedia.org/wiki/Floyd%E2%80%93Warshall_algorithm
-    /// 
+    ///
     /// # Arguments
-    /// * `a` - A mutable reference to a graph represented as an adjacency matrix.
-    /// 
+    /// * `a` - A mutable reference to a graph represented as an adjacency
+    ///   matrix.
+    ///
     /// # Complexity
-    /// The algorithm runs in O(N^3) time, where N is the number of vertices in the graph.
+    /// The algorithm runs in O(N^3) time, where N is the number of vertices in
+    /// the graph.
     pub fn floyd_warshall<const N: usize>(a: &mut Graph<N>)
     {
         for k in 0..N
