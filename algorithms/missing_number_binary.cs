@@ -6,16 +6,21 @@ namespace Sandbox;
 public static class BitExtensions
 {
     /// <summary>
-    /// Returns the bits of an integer as an enumerable sequence.
+    /// Returns the nth bit of an integer as 0 or 1.
     /// </summary>
-    /// <param name="num"> The integer to convert to bits.</param>
-    /// <returns>An enumerable sequence of bits.</returns>
-    public static IEnumerable<int> Bits(this int num)
+    /// <param name="num">The integer from which to extract the bit.</param>
+    /// <param name="n">The bit index (0-based) to extract, where 0 is the least significant bit.</param>
+    /// <returns>0 or 1, depending on the value of the nth bit.</returns>
+    public static int NthBit(this int num, int n)
     {
-        for (int i = 0; i < 32; ++i)
+        if (n < 0 || n >= 32)
         {
-            yield return (num & (1 << i)) != 0 ? 1 : 0;
+            throw new ArgumentOutOfRangeException(
+                nameof(n),
+                "Bit index must be in the range [0..31]."
+            );
         }
+        return (num & (1 << n)) != 0 ? 1 : 0;
     }
 }
 
@@ -41,7 +46,7 @@ public class Algorithm
             // Count expected 1s at this bit position in complete range [0..n]
             foreach (int i in Enumerable.Range(0, n + 1))
             {
-                if (i.Bits().ElementAt(bit) == 1)
+                if (i.NthBit(bit) == 1)
                 {
                     ++expectedOnes;
                 }
@@ -50,7 +55,7 @@ public class Algorithm
             // Count actual 1s at this bit position in given array
             foreach (int num in nums)
             {
-                if (num.Bits().ElementAt(bit) == 1)
+                if (num.NthBit(bit) == 1)
                 {
                     ++actualOnes;
                 }
@@ -87,7 +92,7 @@ public class Algorithm
             Console.Write("\n  Expected pattern: ");
             for (int i = 0; i <= n; ++i)
             {
-                int bitValue = i.Bits().ElementAt(bit);
+                int bitValue = i.NthBit(bit);
                 Console.Write(bitValue);
 
                 if (bitValue == 1)
@@ -113,7 +118,7 @@ public class Algorithm
 
                 if (has_found)
                 {
-                    int bitValue = (i >> bit) & 1;
+                    int bitValue = i.NthBit(bit);
                     Console.Write(bitValue);
                     if (bitValue == 1)
                     {
@@ -138,7 +143,9 @@ public class Algorithm
             }
         }
 
-        Console.WriteLine($"\n\nMissing number in binary: {Convert.ToString(missing, 2)}");
+        Console.WriteLine(
+            $"\n\nMissing number in binary: {Convert.ToString(missing, 2)}"
+        );
         Console.WriteLine($"Missing number in decimal: {missing}");
     }
 }
